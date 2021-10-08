@@ -50,7 +50,7 @@ export default {
         { name: 'isAuthenticated', value: 'isAuthenticated', type: 'boolean' },
     ],
     functions: [
-        { name: 'Login with Popup', code: 'loginWithPopup', parameters: [] },
+        { name: 'Login with Popup', code: 'loginWithPopup', parameters: [], isAsync: true },
         { name: 'Login with Redirect', code: 'loginWithRedirect', parameters: [] },
         { name: 'Logout', code: 'logout', parameters: [] },
     ],
