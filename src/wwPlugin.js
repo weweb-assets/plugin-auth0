@@ -74,6 +74,7 @@ export default {
             if (code && state) {
                 await this.client.handleRedirectCallback();
                 await this.setCookieSession();
+                this.redirectAfterSignIn()
             }
         } catch (err) {
             wwLib.wwLog.error(err);
