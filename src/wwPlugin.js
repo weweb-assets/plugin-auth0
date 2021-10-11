@@ -70,9 +70,9 @@ export default {
     async checkRedirectCallback() {
         console.log('checkRedirectCallback');
         try {
-            const { code, state } = wwLib.manager
-                ? wwLib.getEditorRouter().currentRoute.value.query
-                : wwLib.getFrontRouter().currentRoute.value.query;
+            const router = wwLib.manager ? wwLib.getEditorRouter() : wwLib.getFrontRouter();
+            await router.isReady();
+            const { code, state } = router.currentRoute.value.query;
             console.log('code, state', code, state);
             if (code && state) {
                 await this.client.handleRedirectCallback();
@@ -123,7 +123,7 @@ export default {
                 ? `${window.location.origin}/${website.id}/${page.id}`
                 : `${window.location.origin}/${website.id}/`;
         this.client.logout({ returnTo: redirectUriEditor });
-        wwLib.getEditorWindow().location.reload();
+        setTimeout(wwLib.getEditorWindow().location.reload, 1000);
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(this.settings.publicData.afterNotSignInPageId);
