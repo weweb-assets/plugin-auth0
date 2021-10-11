@@ -108,7 +108,7 @@ export default {
         this.removeCookieSession();
         /* wwEditor:start */
         const website = wwLib.wwWebsiteData.getInfo();
-        const page = wwLib.wwWebsiteData.getPages().find(page => page.id === afterSignInPageId);
+        const page = wwLib.wwWebsiteData.getPages().find(page => page.id === this.settings.publicData.afterSignInPageId);
         const isHomePage = page && page.id === website.homePageId;
         const redirectUriEditor =
             page && !isHomePage
