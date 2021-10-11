@@ -17,6 +17,7 @@ export default {
     \================================================================================================*/
     async onLoad() {
         await this.createClient();
+        console.log('createClient', this.client);
         if (!this.client) return;
         await this.checkRedirectCallback();
         await this.checkIsAuthenticated();
@@ -67,14 +68,19 @@ export default {
         /* wwFront:end */
     },
     async checkRedirectCallback() {
+        console.log('checkRedirectCallback');
         try {
             const { code, state } = wwLib.manager
                 ? wwLib.getEditorRouter().currentRoute.value.query
                 : wwLib.getFrontRouter().currentRoute.value.query;
+            console.log('code, state', code, state);
             if (code && state) {
                 await this.client.handleRedirectCallback();
+                console.log('handleRedirectCallback');
                 await this.setCookieSession();
-                this.redirectAfterSignIn()
+                console.log('handleRedirectCallback');
+                this.redirectAfterSignIn();
+                console.log('handleRedirectCallback');
             }
         } catch (err) {
             wwLib.wwLog.error(err);
@@ -108,14 +114,16 @@ export default {
         this.removeCookieSession();
         /* wwEditor:start */
         const website = wwLib.wwWebsiteData.getInfo();
-        const page = wwLib.wwWebsiteData.getPages().find(page => page.id === this.settings.publicData.afterSignInPageId);
+        const page = wwLib.wwWebsiteData
+            .getPages()
+            .find(page => page.id === this.settings.publicData.afterSignInPageId);
         const isHomePage = page && page.id === website.homePageId;
         const redirectUriEditor =
             page && !isHomePage
                 ? `${window.location.origin}/${website.id}/${page.id}`
                 : `${window.location.origin}/${website.id}/`;
         this.client.logout({ returnTo: redirectUriEditor });
-        window.location.reload()
+        wwLib.getEditorWindow().location.reload();
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(this.settings.publicData.afterNotSignInPageId);
