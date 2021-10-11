@@ -111,13 +111,8 @@ export default {
         const page = wwLib.wwWebsiteData
             .getPages()
             .find(page => page.id === this.settings.publicData.afterNotSignInPageId);
-        const isHomePage = page && page.id === website.homePageId;
-        const redirectUriEditor =
-            page && !isHomePage
-                ? `${window.location.origin}/${website.id}/${page.id}`
-                : `${window.location.origin}/${website.id}/`;
-        this.client.logout({ returnTo: redirectUriEditor });
-        setTimeout(wwLib.getEditorWindow().location.reload, 1000);
+        this.client.logout();
+        wwLib.getEditorWindow().location = `/${website.id}/${page.id}`;
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(this.settings.publicData.afterNotSignInPageId);
