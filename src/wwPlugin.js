@@ -17,7 +17,6 @@ export default {
     \================================================================================================*/
     async onLoad() {
         await this.createClient();
-        console.log('createClient', this.client);
         if (!this.client) return;
         await this.checkRedirectCallback();
         await this.checkIsAuthenticated();
@@ -68,19 +67,14 @@ export default {
         /* wwFront:end */
     },
     async checkRedirectCallback() {
-        console.log('checkRedirectCallback');
         try {
             const router = wwLib.manager ? wwLib.getEditorRouter() : wwLib.getFrontRouter();
             await router.isReady();
             const { code, state } = router.currentRoute.value.query;
-            console.log('code, state', code, state);
             if (code && state) {
                 await this.client.handleRedirectCallback();
-                console.log('handleRedirectCallback');
                 await this.setCookieSession();
-                console.log('handleRedirectCallback');
                 this.redirectAfterSignIn();
-                console.log('handleRedirectCallback');
             }
         } catch (err) {
             wwLib.wwLog.error(err);
@@ -116,7 +110,7 @@ export default {
         const website = wwLib.wwWebsiteData.getInfo();
         const page = wwLib.wwWebsiteData
             .getPages()
-            .find(page => page.id === this.settings.publicData.afterSignInPageId);
+            .find(page => page.id === this.settings.publicData.afterNotSignInPageId);
         const isHomePage = page && page.id === website.homePageId;
         const redirectUriEditor =
             page && !isHomePage
