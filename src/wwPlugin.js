@@ -54,7 +54,7 @@ export default {
         const redirectUriEditor =
             page && !isHomePage
                 ? `${window.location.origin}/${website.id}/${page.id}`
-                : `${window.location.origin}/${website.id}`;
+                : `${window.location.origin}/${website.id}/`;
         this.client = await createAuth0Client({ domain, client_id, redirect_uri: redirectUriEditor });
         /* wwEditor:end */
         /* wwFront:start */
@@ -105,8 +105,21 @@ export default {
     },
     logout() {
         this.removeCookieSession();
+        /* wwEditor:start */
+        const website = wwLib.wwWebsiteData.getInfo();
+        const page = wwLib.wwWebsiteData.getPages().find(page => page.id === afterSignInPageId);
+        const isHomePage = page && page.id === website.homePageId;
+        const redirectUriEditor =
+            page && !isHomePage
+                ? `${window.location.origin}/${website.id}/${page.id}`
+                : `${window.location.origin}/${website.id}/`;
+        this.client.logout({ returnTo: redirectUriEditor });
+        window.location.reload()
+        /* wwEditor:end */
+        /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(this.settings.publicData.afterNotSignInPageId);
         return this.client.logout({ returnTo: `${window.location.origin}${pagePath}` });
+        /* wwFront:end */
     },
     removeCookieSession() {
         window.vm.config.globalProperties.$cookie.removeCookie('session');
