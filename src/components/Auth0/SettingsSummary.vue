@@ -63,6 +63,7 @@ export default {
     methods: {
         getUrls(pageId) {
             const page = wwLib.wwWebsiteData.getPages().find(page => page.id === pageId);
+            if (!page) return null;
             const isHomePageId = page.id === this.website.homePageId;
             const editorUrl = `${window.location.origin}/${this.website.id}/${isHomePageId ? '' : page.id}`;
             const frontUrls = page.langs.map(

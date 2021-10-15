@@ -31,7 +31,7 @@ export default {
     },
     methods: {
         getPageFromId(id) {
-            return this.pages.find(page => page.id === id) || {};
+            return this.pages.find(page => page && page.id === id) || {};
         },
     },
 };
