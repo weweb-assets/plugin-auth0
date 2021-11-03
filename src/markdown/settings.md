@@ -36,7 +36,12 @@ The second one is your login page (be sure to create one now or come back later 
 
 #4 - Allow your website and the editor to connect
 
-Copy & paste Allowed Callback URLs, Allowed Logout URLs, Allowed Web Origins, Allowed Origins (CORS) from WeWeb in the corresponding fields inside the Single Page Application's settings in AUth0, and click Save.
+Copy & paste:
+- Allowed Callback URLs
+- Allowed Logout URLs
+- Allowed Web Origins
+- Allowed Origins (CORS) 
+from WeWeb in the corresponding fields inside the Single Page Application's settings in Auth0, and click Save.
 
 ![https://i.imgur.com/wgHXCox.png](https://i.imgur.com/wgHXCox.png)
 ![https://i.imgur.com/9z6kbkI.png](https://i.imgur.com/9z6kbkI.png)
