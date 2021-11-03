@@ -29,6 +29,9 @@ Give all the permissions to your app.
 
 #3 - Specify the login page
 
+The first page is the one to redirect the user to once his logged-in.
+
+The second one is your login page (be sure to create one now or come back later to edit it!).
 ![https://i.imgur.com/jW2BsyI.png](https://i.imgur.com/jW2BsyI.png)
 
 #4 - Allow your website and the editor to connect
