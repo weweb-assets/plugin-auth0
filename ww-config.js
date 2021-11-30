@@ -46,8 +46,8 @@ export default {
         designSystemId: 'ec2eebfe-499b-43c4-b260-80ee5a4d9504',
     },
     variables: [
-        { name: 'user', value: 'user', type: 'object' },
-        { name: 'isAuthenticated', value: 'isAuthenticated', type: 'boolean' },
+        { name: 'user', value: 'user', type: 'object', defaultValue: null },
+        { name: 'isAuthenticated', value: 'isAuthenticated', type: 'boolean', defaultValue: false },
     ],
     functions: [
         { name: 'Login with Popup', code: 'loginWithPopup', parameters: [], isAsync: true },
