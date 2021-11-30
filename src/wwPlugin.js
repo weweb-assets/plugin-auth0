@@ -88,7 +88,7 @@ export default {
         const isAuthenticated = await this.client.isAuthenticated();
         wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, isAuthenticated);
         const user = await this.client.getUser();
-        wwLib.wwVariable.updateValue(`${this.id}-user`, user);
+        wwLib.wwVariable.updateValue(`${this.id}-user`, user || null);
     },
     async loginWithPopup(options, config) {
         try {
