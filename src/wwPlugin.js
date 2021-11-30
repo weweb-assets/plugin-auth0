@@ -42,10 +42,10 @@ export default {
     \================================================================================================*/
     client: null,
     get isAuthenticated() {
-        return wwLib.$store.getters['data/getPluginVariables'][`${this.id}-isAuthenticated`].value;
+        return wwLib.wwVariable.getValue('e93a2dfd-9b19-473e-b445-c666fed4e14a-isAuthenticated');
     },
     get user() {
-        return wwLib.$store.getters['data/getPluginVariables'][`${this.id}-user`].value;
+        return wwLib.wwVariable.getValue('e93a2dfd-9b19-473e-b445-c666fed4e14a-user');
     },
     async createClient() {
         const { domain, SPAClientId: client_id, afterSignInPageId } = this.settings.publicData;
