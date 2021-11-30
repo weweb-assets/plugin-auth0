@@ -41,6 +41,12 @@ export default {
         Auth0 API
     \================================================================================================*/
     client: null,
+    get isAuthenticated() {
+        return wwLib.$store.getters['data/getPluginVariables'][`${this.id}-isAuthenticated`].value;
+    },
+    get user() {
+        return wwLib.$store.getters['data/getPluginVariables'][`${this.id}-user`].value;
+    },
     async createClient() {
         const { domain, SPAClientId: client_id, afterSignInPageId } = this.settings.publicData;
         if (!domain || !client_id) return;
@@ -80,9 +86,9 @@ export default {
     },
     async checkIsAuthenticated() {
         const isAuthenticated = await this.client.isAuthenticated();
-        wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, isAuthenticated)
+        wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, isAuthenticated);
         const user = await this.client.getUser();
-        wwLib.wwVariable.updateValue(`${this.id}-user`, user)
+        wwLib.wwVariable.updateValue(`${this.id}-user`, user);
     },
     async loginWithPopup(options, config) {
         try {
