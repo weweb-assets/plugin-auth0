@@ -18,14 +18,14 @@ Go to Applications > Create application.
 Select Machine to Machine Application.
 ![https://i.imgur.com/rKDfqY6.png](https://i.imgur.com/rKDfqY6.png)
 
-Go to the app Settings, copy & paste the the Domain, the Client Id and the Client Secret in WeWeb.
-![https://i.imgur.com/jMe6xpd.png](https://i.imgur.com/jMe6xpd.png)
-
 Select Auth0 Management API.
 ![https://i.imgur.com/H4PubBC.png](https://i.imgur.com/H4PubBC.png)
 
 Give all the permissions to your app.
 ![https://i.imgur.com/EEKU6jw.png](https://i.imgur.com/EEKU6jw.png)
+
+Go to the app Settings, copy & paste the the Domain, the Client Id and the Client Secret in WeWeb.
+![https://i.imgur.com/jMe6xpd.png](https://i.imgur.com/jMe6xpd.png)
 
 #3 - Specify the login page
 
