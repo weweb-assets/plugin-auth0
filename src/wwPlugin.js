@@ -84,9 +84,9 @@ export default {
         const user = await this.client.getUser();
         wwLib.wwVariable.updateValue(`${this.id}-user`, user || null);
     },
-    async loginWithPopup(options, config) {
+    async loginWithPopup([screen_hint]) {
         try {
-            await this.client.loginWithPopup(options, config);
+            await this.client.loginWithPopup({ screen_hint });
             await this.setCookieSession();
             this.redirectAfterSignIn();
         } catch (err) {
@@ -95,13 +95,13 @@ export default {
             this.checkIsAuthenticated();
         }
     },
-    loginWithRedirect(o) {
+    loginWithRedirect([screen_hint]) {
         /* wwFront:start */
-        return this.client.loginWithRedirect(o);
+        return this.client.loginWithRedirect({ screen_hint });
         /* wwFront:end */
         /* wwEditor:start */
         // eslint-disable-next-line no-unreachable
-        return this.loginWithPopup(o);
+        return this.loginWithPopup([screen_hint]);
         /* wwEditor:end */
     },
     logout() {
