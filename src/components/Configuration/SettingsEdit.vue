@@ -118,8 +118,7 @@ export default {
             this.isLoading = true;
             try {
                 this.clients = await getClients(this.settings, this.settings.publicData.domain, this.token);
-
-                if (!this.SPAClientOptions.length) {
+                if (!this.SPAClients.length) {
                     const newClient = await createClient(
                         this.settings,
                         SPA_CLIENT,
@@ -142,6 +141,7 @@ export default {
                     },
                 });
             } catch (err) {
+                console.log(err);
                 wwLib.wwNotification.open({ text: 'Make sure the domain and token are correct.', color: 'red' });
             }
             this.isLoading = false;

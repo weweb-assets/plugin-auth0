@@ -159,6 +159,7 @@ export const getClients = async (settings, domain, token) => {
             domain,
             token,
         },
+        fetchPolicy: 'network-only',
     });
     return data.getAuth0Clients.data;
 };
@@ -237,6 +238,7 @@ const getRules = async settings => {
             designId: settings.designId,
             settingsId: settings.id,
         },
+        fetchPolicy: 'network-only',
     });
     return data.getAuth0Rules.data;
 };
@@ -288,5 +290,4 @@ const USER_META_RULE = {
 }`,
     enabled: true,
 };
-
 /* wwEditor:end */
