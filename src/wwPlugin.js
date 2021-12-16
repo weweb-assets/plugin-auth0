@@ -84,7 +84,7 @@ export default {
         const user = await this.client.getUser();
         wwLib.wwVariable.updateValue(`${this.id}-user`, user || null);
     },
-    async loginWithPopup([screen_hint] = []) {
+    async loginWithPopup(screen_hint) {
         try {
             await this.client.loginWithPopup({ screen_hint });
             await this.setCookieSession();
@@ -95,7 +95,7 @@ export default {
             this.checkIsAuthenticated();
         }
     },
-    loginWithRedirect([screen_hint] = []) {
+    loginWithRedirect(screen_hint) {
         /* wwFront:start */
         return this.client.loginWithRedirect({ screen_hint });
         /* wwFront:end */
