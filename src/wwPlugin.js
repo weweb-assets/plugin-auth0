@@ -7,7 +7,7 @@ import './components/Redirections/SettingsEdit.vue';
 import './components/Redirections/SettingsSummary.vue';
 import './components/SinglePageApp/SettingsEdit.vue';
 import './components/SinglePageApp/SettingsSummary.vue';
-import { GET_AUTH0_ROLES, UPDATE_AUTH0_CLIENT } from './graphql';
+import { GET_AUTH0_ROLES, UPDATE_AUTH0_CLIENT, GET_AUTH0_RULES, CREATE_AUTH0_RULE } from './graphql';
 /* wwEditor:end */
 
 export default {
@@ -54,6 +54,7 @@ export default {
                 : `${window.location.origin}/${website.id}/`;
         this.client = await createAuth0Client({ domain, client_id, redirect_uri: redirectUriEditor });
         updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
+        checkRules(this.settings);
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId);
@@ -82,7 +83,10 @@ export default {
         const isAuthenticated = await this.client.isAuthenticated();
         wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, isAuthenticated);
         const user = await this.client.getUser();
-        wwLib.wwVariable.updateValue(`${this.id}-user`, user || null);
+        wwLib.wwVariable.updateValue(
+            `${this.id}-user`,
+            user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
+        );
     },
     async loginWithPopup(screen_hint) {
         try {
@@ -138,6 +142,9 @@ export default {
 };
 
 /* wwEditor:start */
+/*=============================================m_ÔÔ_m=============================================\
+    Clients
+\================================================================================================*/
 export const updateClient = async (settings, clientId, clientData) => {
     const { data } = await wwLib.$apollo.mutate({
         mutation: UPDATE_AUTH0_CLIENT,
@@ -181,5 +188,67 @@ export const getSPAClientRedirection = settings => {
         allowed_origins: origins,
         web_origins: origins,
     };
+};
+
+/*=============================================m_ÔÔ_m=============================================\
+    Rules
+\================================================================================================*/
+const getRules = async settings => {
+    const { data } = await wwLib.$apollo.query({
+        query: GET_AUTH0_RULES,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+        },
+    });
+    return data.getAuth0Rules.data;
+};
+
+const createRule = async (settings, ruleData) => {
+    const { data } = await wwLib.$apollo.mutate({
+        mutation: CREATE_AUTH0_RULE,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            data: ruleData,
+        },
+    });
+    return data.createAuth0Rule.data;
+};
+
+const checkRules = async settings => {
+    const rules = await getRules(settings);
+    const isUserRolesRule = rules.some(rule => rule.name === USER_ROLES_RULE.name);
+    const isUserMetaRule = rules.some(rule => rule.name === USER_META_RULE.name);
+    if (!isUserRolesRule) createRule(settings, USER_ROLES_RULE);
+    if (!isUserMetaRule) createRule(settings, USER_META_RULE);
+};
+
+const USER_ROLES_RULE = {
+    name: 'WeWeb - Enrich user with roles',
+    script: `function addRoles(user, context, callback) {
+    // Roles should only be set to verified users.
+    if (!user.email || !user.email_verified) {
+        return callback(null, user, context);
+    }
+
+    context.idToken['https://auth0.weweb.io/roles'] = context.authorization.roles;
+    context.accessToken['https://auth0.weweb.io/roles'] = context.authorization.roles;
+
+    return callback(null, user, context);
+}`,
+    enabled: true,
+};
+
+const USER_META_RULE = {
+    name: 'WeWeb - Enrich user with metadata',
+    script: `function addRoles(user, context, callback) {
+
+    context.idToken['https://auth0.weweb.io/metadata'] = user.user_metadata;
+    context.accessToken['https://auth0.weweb.io/metadata'] = user.user_metadata;
+
+    return callback(null, user, context);
+}`,
+    enabled: true,
 };
 /* wwEditor:end */
