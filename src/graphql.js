@@ -10,8 +10,8 @@ export const GET_AUTH0_ROLES = gql`
 `;
 
 export const GET_AUTH0_CLIENTS = gql`
-    query GetAuth0Clients($designId: String!, $settingsId: String!, $token: String) {
-        getAuth0Clients(designId: $designId, settingsId: $settingsId, token: $token) {
+    query GetAuth0Clients($designId: String!, $settingsId: String!, $domain: String, $token: String) {
+        getAuth0Clients(designId: $designId, settingsId: $settingsId, domain: $domain, token: $token) {
             success
             data
         }
@@ -19,8 +19,14 @@ export const GET_AUTH0_CLIENTS = gql`
 `;
 
 export const CREATE_AUTH0_CLIENT = gql`
-    mutation CreateAuth0Client($designId: String!, $settingsId: String!, $token: String, $data: JSON!) {
-        createAuth0Client(designId: $designId, settingsId: $settingsId, token: $token, data: $data) {
+    mutation CreateAuth0Client(
+        $designId: String!
+        $settingsId: String!
+        $domain: String
+        $token: String
+        $data: JSON!
+    ) {
+        createAuth0Client(designId: $designId, settingsId: $settingsId, domain: $domain, token: $token, data: $data) {
             success
             data
         }

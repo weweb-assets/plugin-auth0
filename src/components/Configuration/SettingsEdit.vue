@@ -114,11 +114,16 @@ export default {
         async onTokenChange() {
             this.isLoading = true;
             try {
-                this.clients = await getClients(this.settings, this.token);
+                this.clients = await getClients(this.settings, this.settings.publicData.domain, this.token);
                 this.changePublicSettings('M2MClientId', this.M2MClients[0].client_id);
                 this.changePrivateSettings('M2MClientSecret', this.M2MClients[0].client_secret);
                 if (!this.SPAClientOptions.length) {
-                    const newClient = await createClient(this.settings, this.token, SPA_CLIENT);
+                    const newClient = await createClient(
+                        this.settings,
+                        this.settings.publicData.domain,
+                        this.token,
+                        SPA_CLIENT
+                    );
                     this.clients.push(newClient);
                 }
                 this.changePublicSettings('SPAClientId', this.SPAClients[0].client_id);

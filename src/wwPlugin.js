@@ -150,24 +150,26 @@ export default {
 /*=============================================m_ÔÔ_m=============================================\
     Clients
 \================================================================================================*/
-export const getClients = async (settings, token) => {
+export const getClients = async (settings, domain, token) => {
     const { data } = await wwLib.$apollo.query({
         query: GET_AUTH0_CLIENTS,
         variables: {
             designId: settings.designId,
             settingsId: settings.id,
+            domain,
             token,
         },
     });
     return data.getAuth0Clients.data;
 };
 
-export const createClient = async (settings, clientData, token) => {
+export const createClient = async (settings, clientData, domain, token) => {
     const { data } = await wwLib.$apollo.mutate({
         mutation: CREATE_AUTH0_CLIENT,
         variables: {
             designId: settings.designId,
             settingsId: settings.id,
+            domain,
             token,
             data: clientData,
         },
