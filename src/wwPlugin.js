@@ -7,8 +7,7 @@ import './components/Redirections/SettingsEdit.vue';
 import './components/Redirections/SettingsSummary.vue';
 import './components/SinglePageApp/SettingsEdit.vue';
 import './components/SinglePageApp/SettingsSummary.vue';
-import './components/Auth0/SettingsSummary.vue';
-import { GET_AUTH0_ROLES } from './graphql';
+import { GET_AUTH0_ROLES, UPDATE_AUTH0_CLIENT } from './graphql';
 /* wwEditor:end */
 
 export default {
@@ -54,6 +53,7 @@ export default {
                 ? `${window.location.origin}/${website.id}/${page.id}`
                 : `${window.location.origin}/${website.id}/`;
         this.client = await createAuth0Client({ domain, client_id, redirect_uri: redirectUriEditor });
+        updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId);
@@ -136,3 +136,47 @@ export default {
         /* wwEditor:end */
     },
 };
+
+/* wwEditor:start */
+export const updateClient = async (settings, clientId, clientData) => {
+    const { data } = await wwLib.$apollo.mutate({
+        mutation: UPDATE_AUTH0_CLIENT,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            clientId,
+            data: clientData,
+        },
+    });
+    return data.updateAuth0Client.data;
+};
+
+export const getSPAClientRedirection = settings => {
+    const getUrls = pageId => {
+        const page = wwLib.wwWebsiteData.getPages().find(page => page.id === pageId);
+        if (!page) return [];
+        const isHomePageId = page.id === wwLib.wwWebsiteData.getInfo().homePageId;
+        const editorUrl = `${window.location.origin}/${settings.designId}/${isHomePageId ? '' : page.id}`;
+        const frontUrls = page.langs.map(
+            lang =>
+                `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}${wwLib.wwPageHelper.getPagePath(
+                    page.id,
+                    lang
+                )}`
+        );
+        return [...frontUrls, editorUrl];
+    };
+    return {
+        callbacks: getUrls(settings.publicData.afterSignInPageId),
+        allowed_logout_urls: getUrls(settings.publicData.afterNotSignInPageId),
+        allowed_origins: [
+            `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}`,
+            `${window.location.origin}`,
+        ],
+        web_origins: [
+            `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}`,
+            `${window.location.origin}`,
+        ],
+    };
+};
+/* wwEditor:end */
