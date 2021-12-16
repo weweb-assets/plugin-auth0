@@ -117,7 +117,7 @@ export default {
         async onTokenChange() {
             this.isLoading = true;
             try {
-                this.clients = await getClients(this.settings, this.settings.publicData.domain, this.token);
+                this.clients = [...(await getClients(this.settings, this.settings.publicData.domain, this.token))];
                 if (!this.SPAClients.length) {
                     const newClient = await createClient(
                         this.settings,
@@ -141,8 +141,8 @@ export default {
                     },
                 });
             } catch (err) {
-                console.log(err);
                 wwLib.wwNotification.open({ text: 'Make sure the domain and token are correct.', color: 'red' });
+                wwLib.wwLog.error(err);
             }
             this.isLoading = false;
         },
