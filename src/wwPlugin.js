@@ -5,6 +5,7 @@ import './components/Redirections/SettingsEdit.vue';
 import './components/Redirections/SettingsSummary.vue';
 import './components/Configuration/SettingsEdit.vue';
 import './components/Configuration/SettingsSummary.vue';
+import './components/Login.vue';
 import {
     GET_AUTH0_ROLES,
     GET_AUTH0_CLIENTS,
