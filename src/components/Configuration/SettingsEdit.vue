@@ -120,9 +120,9 @@ export default {
                 if (!this.SPAClientOptions.length) {
                     const newClient = await createClient(
                         this.settings,
+                        SPA_CLIENT,
                         this.settings.publicData.domain,
-                        this.token,
-                        SPA_CLIENT
+                        this.token
                     );
                     this.clients.push(newClient);
                 }
