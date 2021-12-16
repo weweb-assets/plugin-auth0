@@ -1,13 +1,18 @@
 import createAuth0Client from '@auth0/auth0-spa-js';
 
 /* wwEditor:start */
-import './components/MachineToMachine/SettingsEdit.vue';
-import './components/MachineToMachine/SettingsSummary.vue';
 import './components/Redirections/SettingsEdit.vue';
 import './components/Redirections/SettingsSummary.vue';
-import './components/SinglePageApp/SettingsEdit.vue';
-import './components/SinglePageApp/SettingsSummary.vue';
-import { GET_AUTH0_ROLES, UPDATE_AUTH0_CLIENT, GET_AUTH0_RULES, CREATE_AUTH0_RULE } from './graphql';
+import './components/Configuration/SettingsEdit.vue';
+import './components/Configuration/SettingsSummary.vue';
+import {
+    GET_AUTH0_ROLES,
+    GET_AUTH0_CLIENTS,
+    CREATE_AUTH0_CLIENT,
+    UPDATE_AUTH0_CLIENT,
+    GET_AUTH0_RULES,
+    CREATE_AUTH0_RULE,
+} from './graphql';
 /* wwEditor:end */
 
 export default {
@@ -145,6 +150,31 @@ export default {
 /*=============================================m_ÔÔ_m=============================================\
     Clients
 \================================================================================================*/
+export const getClients = async (settings, token) => {
+    const { data } = await wwLib.$apollo.query({
+        query: GET_AUTH0_CLIENTS,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            token,
+        },
+    });
+    return data.getAuth0Clients.data;
+};
+
+export const createClient = async (settings, clientData, token) => {
+    const { data } = await wwLib.$apollo.mutate({
+        mutation: CREATE_AUTH0_CLIENT,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            token,
+            data: clientData,
+        },
+    });
+    return data.createAuth0Client.data;
+};
+
 export const updateClient = async (settings, clientId, clientData) => {
     const { data } = await wwLib.$apollo.mutate({
         mutation: UPDATE_AUTH0_CLIENT,
@@ -188,6 +218,11 @@ export const getSPAClientRedirection = settings => {
         allowed_origins: origins,
         web_origins: origins,
     };
+};
+
+export const SPA_CLIENT = {
+    name: 'WeWeb App',
+    app_type: 'spa',
 };
 
 /*=============================================m_ÔÔ_m=============================================\
@@ -251,4 +286,5 @@ const USER_META_RULE = {
 }`,
     enabled: true,
 };
+
 /* wwEditor:end */

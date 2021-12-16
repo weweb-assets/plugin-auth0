@@ -4,20 +4,24 @@
             <wwEditorInputTextSelect
                 name="after-sign-in-page-id"
                 :options="pagesOptions"
+                :actions="pageActions"
                 :model-value="settings.publicData.afterSignInPageId"
                 placeholder="Select a page"
                 large
                 @update:modelValue="changePublicSettings('afterSignInPageId', $event)"
+                @action="onAction"
             />
         </wwEditorFormRow>
         <wwEditorFormRow required label="Page to redirect when user is not signed-in">
             <wwEditorInputTextSelect
                 name="after-not-sign-in-page-id"
                 :options="pagesOptions"
+                :actions="pageActions"
                 :model-value="settings.publicData.afterNotSignInPageId"
                 placeholder="Select a page"
                 large
                 @update:modelValue="changePublicSettings('afterNotSignInPageId', $event)"
+                @action="onAction"
             />
         </wwEditorFormRow>
     </div>
@@ -31,6 +35,11 @@ export default {
         settings: { type: Object, required: true },
     },
     emits: ['update:settings'],
+    data() {
+        return {
+            pageActions: [{ icon: 'add', label: 'Create page', onAction: this.createPage }],
+        };
+    },
     computed: {
         pagesOptions() {
             return wwLib.wwWebsiteData.getPages().map(page => ({ label: page.name, value: page.id }));
@@ -43,6 +52,17 @@ export default {
                 publicData: { ...this.settings.publicData, [key]: value },
             });
             updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
+        },
+        createPage() {
+            // eslint-disable-next-line vue/custom-event-name-casing
+            wwLib.$emit('wwTopBar:open', 'WEBSITE_PAGES');
+            // eslint-disable-next-line vue/custom-event-name-casing
+            wwLib.$emit('wwTopBar:pages:setPage', undefined);
+            // eslint-disable-next-line vue/custom-event-name-casing
+            this.$nextTick(() => wwLib.$emit('wwTopBar:pages:setMenu', 'ww-page-create'));
+        },
+        onAction(action) {
+            action.onAction && action.onAction();
         },
     },
 };

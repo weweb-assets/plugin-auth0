@@ -2,25 +2,14 @@ export default {
     editor: {
         settings: [
             {
-                label: 'Set-up Single Page Application',
+                label: 'Configuration',
                 icon: 'advanced',
-                edit: () => import('./src/components/SinglePageApp/SettingsEdit.vue'),
-                summary: () => import('./src/components/SinglePageApp/SettingsSummary.vue'),
+                edit: () => import('./src/components/Configuration/SettingsEdit.vue'),
+                summary: () => import('./src/components/Configuration/SettingsSummary.vue'),
                 getIsValid(settings) {
-                    const { domain, SPAClientId } = settings.publicData;
-                    const { SPAClientSecret } = settings.privateData;
-                    return !!domain && !!SPAClientId && !!SPAClientSecret;
-                },
-            },
-            {
-                label: 'Set-up Machine to Machine Application',
-                icon: 'advanced',
-                edit: () => import('./src/components/MachineToMachine/SettingsEdit.vue'),
-                summary: () => import('./src/components/MachineToMachine/SettingsSummary.vue'),
-                getIsValid(settings) {
-                    const { domain, M2MClientId } = settings.publicData;
-                    const { M2MClientSecret } = settings.privateData;
-                    return !!domain && !!M2MClientId && !!M2MClientSecret;
+                    const { domain, SPAClientId, M2MClientId } = settings.publicData;
+                    const { SPAClientSecret, M2MClientSecret } = settings.privateData;
+                    return !!domain && !!SPAClientId && !!SPAClientSecret && !!M2MClientId && !!M2MClientSecret;
                 },
             },
             {
