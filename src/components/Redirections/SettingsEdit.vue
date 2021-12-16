@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import { updateClient, getSPAClientRedirection } from '../../wwPlugin.js';
+
 export default {
     props: {
         settings: { type: Object, required: true },
@@ -40,6 +42,7 @@ export default {
                 ...this.settings,
                 publicData: { ...this.settings.publicData, [key]: value },
             });
+            updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
         },
     },
 };
