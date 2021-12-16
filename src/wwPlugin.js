@@ -152,31 +152,34 @@ export const updateClient = async (settings, clientId, clientData) => {
 };
 
 export const getSPAClientRedirection = settings => {
+    const customDomain = wwLib.wwWebsiteData.getInfo().names[0];
     const getUrls = pageId => {
         const page = wwLib.wwWebsiteData.getPages().find(page => page.id === pageId);
         if (!page) return [];
         const isHomePageId = page.id === wwLib.wwWebsiteData.getInfo().homePageId;
         const editorUrl = `${window.location.origin}/${settings.designId}/${isHomePageId ? '' : page.id}`;
-        const frontUrls = page.langs.map(
-            lang =>
+        const frontUrls = page.langs
+            .map(lang => [
                 `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}${wwLib.wwPageHelper.getPagePath(
                     page.id,
                     lang
-                )}`
-        );
+                )}`,
+                customDomain && `https://${customDomain.name}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
+            ])
+            .flat()
+            .filter(item => item);
         return [...frontUrls, editorUrl];
     };
+    const origins = [
+        `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}`,
+        customDomain && customDomain.name,
+        `${window.location.origin}`,
+    ].filter(item => item);
     return {
         callbacks: getUrls(settings.publicData.afterSignInPageId),
         allowed_logout_urls: getUrls(settings.publicData.afterNotSignInPageId),
-        allowed_origins: [
-            `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}`,
-            `${window.location.origin}`,
-        ],
-        web_origins: [
-            `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}`,
-            `${window.location.origin}`,
-        ],
+        allowed_origins: origins,
+        web_origins: origins,
     };
 };
 /* wwEditor:end */
