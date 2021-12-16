@@ -115,8 +115,14 @@ export default {
             this.isLoading = true;
             try {
                 this.clients = await getClients(this.settings, this.settings.publicData.domain, this.token);
-                this.changePublicSettings('M2MClientId', this.M2MClients[0].client_id);
-                this.changePrivateSettings('M2MClientSecret', this.M2MClients[0].client_secret);
+                this.$emit('update:settings', {
+                    ...this.settings,
+                    privateData: {
+                        ...this.settings.privateData,
+                        M2MClientId: this.M2MClients[0].client_id,
+                        M2MClientSecret: this.M2MClients[0].client_secret,
+                    },
+                });
                 if (!this.SPAClientOptions.length) {
                     const newClient = await createClient(
                         this.settings,
@@ -126,8 +132,14 @@ export default {
                     );
                     this.clients.push(newClient);
                 }
-                this.changePublicSettings('SPAClientId', this.SPAClients[0].client_id);
-                this.changePrivateSettings('SPAClientSecret', this.SPAClients[0].client_secret);
+                this.$emit('update:settings', {
+                    ...this.settings,
+                    publicData: {
+                        ...this.settings.publicData,
+                        SPAClientId: this.SPAClients[0].client_id,
+                        SPAClientSecret: this.SPAClients[0].client_secret,
+                    },
+                });
             } catch (err) {
                 wwLib.wwNotification.open({ text: 'Invalid token.', color: 'red' });
             }
