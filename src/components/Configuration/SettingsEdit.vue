@@ -9,7 +9,7 @@
             <wwEditorInputText
                 type="text"
                 name="domain"
-                placeholder="tenant-name.auth0.com"
+                placeholder="tenant-name.us.auth0.com"
                 :model-value="settings.publicData.domain"
                 large
                 @update:modelValue="changePublicSettings('domain', $event)"
@@ -81,8 +81,11 @@ export default {
         try {
             this.clients = await getClients(this.settings);
         } catch (err) {
-            this.changePublicSettings('M2MClientId', null);
-            this.changePublicSettings('M2MClientSecret', null);
+            this.$emit('update:settings', {
+                ...this.settings,
+                publicData: { ...this.settings.publicData, M2MClientId: null },
+                privateData: { ...this.settings.privateData, M2MClientSecret: null },
+            });
         }
         this.isLoading = false;
     },
@@ -90,25 +93,25 @@ export default {
         setSPAClient(clientId) {
             const client = this.clients.find(client => client.client_id === clientId);
             if (!client) return;
-            this.changePublicSettings('SPAClientId', clientId);
-            this.changePrivateSettings('SPAClientSecret', client.client_secret);
+            this.$emit('update:settings', {
+                ...this.settings,
+                publicData: { ...this.settings.publicData, SPAClientId: clientId },
+                privateData: { ...this.settings.privateData, SPAClientSecret: client.client_secret },
+            });
         },
         setM2MClient(clientId) {
             const client = this.clients.find(client => client.client_id === clientId);
             if (!client) return;
-            this.changePublicSettings('M2MClientId', clientId);
-            this.changePrivateSettings('M2MClientSecret', client.client_secret);
+            this.$emit('update:settings', {
+                ...this.settings,
+                publicData: { ...this.settings.publicData, M2MClientId: clientId },
+                privateData: { ...this.settings.privateData, M2MClientSecret: client.client_secret },
+            });
         },
         changePublicSettings(key, value) {
             this.$emit('update:settings', {
                 ...this.settings,
                 publicData: { ...this.settings.publicData, [key]: value },
-            });
-        },
-        changePrivateSettings(key, value) {
-            this.$emit('update:settings', {
-                ...this.settings,
-                privateData: { ...this.settings.privateData, [key]: value },
             });
         },
         async onTokenChange() {
@@ -117,11 +120,8 @@ export default {
                 this.clients = await getClients(this.settings, this.settings.publicData.domain, this.token);
                 this.$emit('update:settings', {
                     ...this.settings,
-                    privateData: {
-                        ...this.settings.privateData,
-                        M2MClientId: this.M2MClients[0].client_id,
-                        M2MClientSecret: this.M2MClients[0].client_secret,
-                    },
+                    publicData: { ...this.settings.publicData, M2MClientId: this.M2MClients[0].client_id },
+                    privateData: { ...this.settings.privateData, M2MClientSecret: this.M2MClients[0].client_secret },
                 });
                 if (!this.SPAClientOptions.length) {
                     const newClient = await createClient(
@@ -134,14 +134,11 @@ export default {
                 }
                 this.$emit('update:settings', {
                     ...this.settings,
-                    publicData: {
-                        ...this.settings.publicData,
-                        SPAClientId: this.SPAClients[0].client_id,
-                        SPAClientSecret: this.SPAClients[0].client_secret,
-                    },
+                    publicData: { ...this.settings.publicData, SPAClientId: this.SPAClients[0].client_id },
+                    privateData: { ...this.settings.privateData, SPAClientSecret: this.SPAClients[0].client_secret },
                 });
             } catch (err) {
-                wwLib.wwNotification.open({ text: 'Invalid token.', color: 'red' });
+                wwLib.wwNotification.open({ text: 'Make sure the domain and token are correct.', color: 'red' });
             }
             this.isLoading = false;
         },
