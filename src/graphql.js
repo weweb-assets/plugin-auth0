@@ -17,3 +17,21 @@ export const UPDATE_AUTH0_CLIENT = gql`
         }
     }
 `;
+
+export const GET_AUTH0_RULES = gql`
+    query GetAuth0Rules($designId: String!, $settingsId: String!) {
+        getAuth0Rules(designId: $designId, settingsId: $settingsId) {
+            success
+            data
+        }
+    }
+`;
+
+export const CREATE_AUTH0_RULE = gql`
+    mutation CreateAuth0Rule($designId: String!, $settingsId: String!, $data: JSON!) {
+        createAuth0Rule(designId: $designId, settingsId: $settingsId, data: $data) {
+            success
+            data
+        }
+    }
+`;
