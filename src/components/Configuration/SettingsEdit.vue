@@ -118,11 +118,7 @@ export default {
             this.isLoading = true;
             try {
                 this.clients = await getClients(this.settings, this.settings.publicData.domain, this.token);
-                this.$emit('update:settings', {
-                    ...this.settings,
-                    publicData: { ...this.settings.publicData, M2MClientId: this.M2MClients[0].client_id },
-                    privateData: { ...this.settings.privateData, M2MClientSecret: this.M2MClients[0].client_secret },
-                });
+
                 if (!this.SPAClientOptions.length) {
                     const newClient = await createClient(
                         this.settings,
@@ -134,8 +130,16 @@ export default {
                 }
                 this.$emit('update:settings', {
                     ...this.settings,
-                    publicData: { ...this.settings.publicData, SPAClientId: this.SPAClients[0].client_id },
-                    privateData: { ...this.settings.privateData, SPAClientSecret: this.SPAClients[0].client_secret },
+                    publicData: {
+                        ...this.settings.publicData,
+                        M2MClientId: this.M2MClients[0].client_id,
+                        SPAClientId: this.SPAClients[0].client_id,
+                    },
+                    privateData: {
+                        ...this.settings.privateData,
+                        M2MClientSecret: this.M2MClients[0].client_secret,
+                        SPAClientSecret: this.SPAClients[0].client_secret,
+                    },
                 });
             } catch (err) {
                 wwLib.wwNotification.open({ text: 'Make sure the domain and token are correct.', color: 'red' });
