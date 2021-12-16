@@ -227,6 +227,7 @@ export const getSPAClientRedirection = settings => {
 export const SPA_CLIENT = {
     name: 'WeWeb App',
     app_type: 'spa',
+    token_endpoint_auth_method: 'none',
     jwt_configuration: {
         alg: 'RS256',
     },
