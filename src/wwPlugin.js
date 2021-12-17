@@ -7,6 +7,7 @@ import './components/Configuration/SettingsEdit.vue';
 import './components/Configuration/SettingsSummary.vue';
 import './components/Functions/Login.vue';
 import './components/Functions/ChangePassword.vue';
+import './components/Functions/UpdateCurrentUser.vue';
 import {
     GET_AUTH0_ROLES,
     GET_AUTH0_CLIENTS,
@@ -15,6 +16,7 @@ import {
     GET_AUTH0_RULES,
     CREATE_AUTH0_RULE,
     GET_AUTH0_CONNECTIONS,
+    UPDATE_CURRENT_USER,
 } from './graphql';
 /* wwEditor:end */
 
@@ -156,6 +158,36 @@ export default {
         });
 
         return response.data;
+    },
+    async updateCurrentUser(email, familyName, givenName, nickname, username, name, picture, phoneNumber, metadata) {
+        const data = {
+            email,
+            familyName,
+            givenName,
+            nickname,
+            username,
+            name,
+            picture,
+            phoneNumber,
+            metadata: (metadata || []).reduce((obj, item) => ({ ...obj, [item.key]: item.value }), {}),
+        };
+        /* wwEditor:start */
+        await updateCurrentUser(this.settings, data);
+        /* wwEditor:end */
+        /* wwFront:start */
+        const websiteId = wwLib.wwWebsiteData.getInfo().id;
+        await axios.patch(
+            `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
+                this.settings.id
+            }/auth0/users/current`,
+            data
+        );
+        /* wwFront:end */
+        const user = await this.client.getUser();
+        wwLib.wwVariable.updateValue(
+            `${this.id}-user`,
+            user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
+        );
     },
 };
 
@@ -321,5 +353,20 @@ export const getConnections = async settings => {
         fetchPolicy: 'network-only',
     });
     return data.getAuth0Connections.data;
+};
+
+/*=============================================m_ÔÔ_m=============================================\
+    Users
+\================================================================================================*/
+const updateCurrentUser = async (settings, userData) => {
+    const { data } = await wwLib.$apollo.mutate({
+        mutation: UPDATE_CURRENT_USER,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            data: userData,
+        },
+    });
+    return data.updateAuth0CurrentUser.data;
 };
 /* wwEditor:end */

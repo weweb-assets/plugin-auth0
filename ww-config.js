@@ -49,6 +49,24 @@ export default {
         },
         { name: 'Logout', code: 'logout', parameters: [] },
         {
+            name: 'Update Current User',
+            code: 'updateCurrentUser',
+            parameters: [
+                { name: 'Email', type: 'string' },
+                { name: 'Family name', type: 'string' },
+                { name: 'Given name', type: 'string' },
+                { name: 'Nickname', type: 'string' },
+                { name: 'Username', type: 'string' },
+                { name: 'Name', type: 'string' },
+                { name: 'Picture', type: 'string' },
+                { name: 'Phone number', type: 'string' },
+                { name: 'Metadata', type: 'object' },
+            ],
+            /* wwEditor:start */
+            edit: () => import('./src/components/Functions/UpdateCurrentUser.vue'),
+            /* wwEditor:end */
+        },
+        {
             name: 'Change User Password',
             code: 'changeUserPassword',
             parameters: [

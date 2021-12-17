@@ -68,3 +68,12 @@ export const GET_AUTH0_CONNECTIONS = gql`
         }
     }
 `;
+
+export const UPDATE_CURRENT_USER = gql`
+    mutation UpdateAuth0CurrentUser($designId: String!, $settingsId: String!, $data: JSON!) {
+        updateAuth0CurrentUser(designId: $designId, settingsId: $settingsId, data: $data) {
+            success
+            data
+        }
+    }
+`;
