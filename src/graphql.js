@@ -59,3 +59,12 @@ export const CREATE_AUTH0_RULE = gql`
         }
     }
 `;
+
+export const GET_AUTH0_CONNECTIONS = gql`
+    query GetAuth0Connections($designId: String!, $settingsId: String!) {
+        getAuth0Connections(designId: $designId, settingsId: $settingsId) {
+            success
+            data
+        }
+    }
+`;

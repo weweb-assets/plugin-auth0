@@ -36,7 +36,7 @@ export default {
             parameters: [{ name: 'screenHint', type: 'string' }],
             isAsync: true,
             /* wwEditor:start */
-            edit: () => import('./src/components/Login.vue'),
+            edit: () => import('./src/components/Functions/Login.vue'),
             /* wwEditor:end */
         },
         {
@@ -44,9 +44,23 @@ export default {
             code: 'loginWithRedirect',
             parameters: [{ name: 'screenHint', type: 'string' }],
             /* wwEditor:start */
-            edit: () => import('./src/components/Login.vue'),
+            edit: () => import('./src/components/Functions/Login.vue'),
             /* wwEditor:end */
         },
         { name: 'Logout', code: 'logout', parameters: [] },
+        {
+            name: 'Change User Password',
+            code: 'changeUserPassword',
+            parameters: [
+                { name: 'Database', type: 'string' },
+                { name: 'Email', type: 'string' },
+            ],
+            /* wwEditor:start */
+            edit: () => import('./src/components/Functions/ChangePassword.vue'),
+            getIsValid([connection, email]) {
+                return !!connection && !!email;
+            },
+            /* wwEditor:end */
+        },
     ],
 };

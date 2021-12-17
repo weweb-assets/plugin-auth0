@@ -5,7 +5,8 @@ import './components/Redirections/SettingsEdit.vue';
 import './components/Redirections/SettingsSummary.vue';
 import './components/Configuration/SettingsEdit.vue';
 import './components/Configuration/SettingsSummary.vue';
-import './components/Login.vue';
+import './components/Functions/Login.vue';
+import './components/Functions/ChangePassword.vue';
 import {
     GET_AUTH0_ROLES,
     GET_AUTH0_CLIENTS,
@@ -13,6 +14,7 @@ import {
     UPDATE_AUTH0_CLIENT,
     GET_AUTH0_RULES,
     CREATE_AUTH0_RULE,
+    GET_AUTH0_CONNECTIONS,
 } from './graphql';
 /* wwEditor:end */
 
@@ -144,6 +146,16 @@ export default {
         /* wwEditor:start */
         wwLib.goTo(this.settings.publicData.afterSignInPageId);
         /* wwEditor:end */
+    },
+    async changeUserPassword(connection, email) {
+        if (!email) return;
+
+        const response = await axios.post(`${this.settings.publicData.domain}/dbconnections/change_password`, {
+            connection,
+            email,
+        });
+
+        return response.data;
     },
 };
 
@@ -294,5 +306,20 @@ const USER_META_RULE = {
     return callback(null, user, context);
 }`,
     enabled: true,
+};
+
+/*=============================================m_ÔÔ_m=============================================\
+    Connections
+\================================================================================================*/
+export const getConnections = async settings => {
+    const { data } = await wwLib.$apollo.query({
+        query: GET_AUTH0_CONNECTIONS,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+        },
+        fetchPolicy: 'network-only',
+    });
+    return data.getAuth0Connections.data;
 };
 /* wwEditor:end */
