@@ -49,7 +49,7 @@ export default {
         connectionOptions() {
             return this.connections
                 .filter(connection => connection.strategy === 'auth0')
-                .map(connection => ({ label: connection.name, value: connection.id }));
+                .map(connection => ({ label: connection.name, value: connection.name }));
         },
     },
     async mounted() {
