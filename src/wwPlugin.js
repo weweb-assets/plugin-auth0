@@ -183,6 +183,7 @@ export default {
             data
         );
         /* wwFront:end */
+        await wwLib.wwPlugins.auth0.client.getTokenSilently({ ignoreCache: true });
         const user = await this.client.getUser();
         wwLib.wwVariable.updateValue(
             `${this.id}-user`,
