@@ -1,14 +1,23 @@
 import createAuth0Client from '@auth0/auth0-spa-js';
 
 /* wwEditor:start */
-import './components/MachineToMachine/SettingsEdit.vue';
-import './components/MachineToMachine/SettingsSummary.vue';
 import './components/Redirections/SettingsEdit.vue';
 import './components/Redirections/SettingsSummary.vue';
-import './components/SinglePageApp/SettingsEdit.vue';
-import './components/SinglePageApp/SettingsSummary.vue';
-import './components/Auth0/SettingsSummary.vue';
-import { GET_AUTH0_ROLES } from './graphql';
+import './components/Configuration/SettingsEdit.vue';
+import './components/Configuration/SettingsSummary.vue';
+import './components/Functions/Login.vue';
+import './components/Functions/ChangePassword.vue';
+import './components/Functions/UpdateCurrentUser.vue';
+import {
+    GET_AUTH0_ROLES,
+    GET_AUTH0_CLIENTS,
+    CREATE_AUTH0_CLIENT,
+    UPDATE_AUTH0_CLIENT,
+    GET_AUTH0_RULES,
+    CREATE_AUTH0_RULE,
+    GET_AUTH0_CONNECTIONS,
+    UPDATE_CURRENT_USER,
+} from './graphql';
 /* wwEditor:end */
 
 export default {
@@ -54,6 +63,8 @@ export default {
                 ? `${window.location.origin}/${website.id}/${page.id}`
                 : `${window.location.origin}/${website.id}/`;
         this.client = await createAuth0Client({ domain, client_id, redirect_uri: redirectUriEditor });
+        updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
+        checkRules(this.settings);
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId);
@@ -82,11 +93,14 @@ export default {
         const isAuthenticated = await this.client.isAuthenticated();
         wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, isAuthenticated);
         const user = await this.client.getUser();
-        wwLib.wwVariable.updateValue(`${this.id}-user`, user || null);
+        wwLib.wwVariable.updateValue(
+            `${this.id}-user`,
+            user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
+        );
     },
-    async loginWithPopup(options, config) {
+    async loginWithPopup(screen_hint) {
         try {
-            await this.client.loginWithPopup(options, config);
+            await this.client.loginWithPopup({ screen_hint });
             await this.setCookieSession();
             this.redirectAfterSignIn();
         } catch (err) {
@@ -95,13 +109,13 @@ export default {
             this.checkIsAuthenticated();
         }
     },
-    loginWithRedirect(o) {
+    loginWithRedirect(screen_hint) {
         /* wwFront:start */
-        return this.client.loginWithRedirect(o);
+        return this.client.loginWithRedirect({ screen_hint });
         /* wwFront:end */
         /* wwEditor:start */
         // eslint-disable-next-line no-unreachable
-        return this.loginWithPopup(o);
+        return this.loginWithPopup([screen_hint]);
         /* wwEditor:end */
     },
     logout() {
@@ -135,4 +149,224 @@ export default {
         wwLib.goTo(this.settings.publicData.afterSignInPageId);
         /* wwEditor:end */
     },
+    async changeUserPassword(connection, email) {
+        if (!email) return;
+
+        const response = await axios.post(`${this.settings.publicData.domain}/dbconnections/change_password`, {
+            connection,
+            email,
+        });
+
+        return response.data;
+    },
+    async updateCurrentUser(email, familyName, givenName, nickname, username, name, picture, phoneNumber, metadata) {
+        const data = {
+            email,
+            familyName,
+            givenName,
+            nickname,
+            username,
+            name,
+            picture,
+            phoneNumber,
+            metadata: (metadata || []).reduce((obj, item) => ({ ...obj, [item.key]: item.value }), {}),
+        };
+        /* wwEditor:start */
+        await updateCurrentUser(this.settings, data);
+        /* wwEditor:end */
+        /* wwFront:start */
+        const websiteId = wwLib.wwWebsiteData.getInfo().id;
+        await axios.patch(
+            `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
+                this.settings.id
+            }/auth0/users/current`,
+            data
+        );
+        /* wwFront:end */
+        const user = await this.client.getUser();
+        wwLib.wwVariable.updateValue(
+            `${this.id}-user`,
+            user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
+        );
+    },
 };
+
+/* wwEditor:start */
+/*=============================================m_ÔÔ_m=============================================\
+    Clients
+\================================================================================================*/
+export const getClients = async (settings, domain, token) => {
+    const { data } = await wwLib.$apollo.query({
+        query: GET_AUTH0_CLIENTS,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            domain,
+            token,
+        },
+        fetchPolicy: 'network-only',
+    });
+    return data.getAuth0Clients.data;
+};
+
+export const createClient = async (settings, clientData, domain, token) => {
+    const { data } = await wwLib.$apollo.mutate({
+        mutation: CREATE_AUTH0_CLIENT,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            domain,
+            token,
+            data: clientData,
+        },
+    });
+    return data.createAuth0Client.data;
+};
+
+export const updateClient = async (settings, clientId, clientData) => {
+    const { data } = await wwLib.$apollo.mutate({
+        mutation: UPDATE_AUTH0_CLIENT,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            clientId,
+            data: clientData,
+        },
+    });
+    return data.updateAuth0Client.data;
+};
+
+export const getSPAClientRedirection = settings => {
+    const customDomain = wwLib.wwWebsiteData.getInfo().names[0];
+    const getUrls = pageId => {
+        const page = wwLib.wwWebsiteData.getPages().find(page => page.id === pageId);
+        if (!page) return [];
+        const isHomePageId = page.id === wwLib.wwWebsiteData.getInfo().homePageId;
+        const editorUrl = `${window.location.origin}/${settings.designId}/${isHomePageId ? '' : page.id}`;
+        const frontUrls = page.langs
+            .map(lang => [
+                `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}${wwLib.wwPageHelper.getPagePath(
+                    page.id,
+                    lang
+                )}`,
+                customDomain && `https://${customDomain.name}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
+            ])
+            .flat()
+            .filter(item => item);
+        return [...frontUrls, editorUrl];
+    };
+    const origins = [
+        `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}`,
+        customDomain && customDomain.name,
+        `${window.location.origin}`,
+    ].filter(item => item);
+    return {
+        callbacks: getUrls(settings.publicData.afterSignInPageId),
+        allowed_logout_urls: getUrls(settings.publicData.afterNotSignInPageId),
+        allowed_origins: origins,
+        web_origins: origins,
+    };
+};
+
+export const SPA_CLIENT = {
+    name: 'WeWeb App',
+    app_type: 'spa',
+    token_endpoint_auth_method: 'none',
+    jwt_configuration: {
+        alg: 'RS256',
+    },
+};
+
+/*=============================================m_ÔÔ_m=============================================\
+    Rules
+\================================================================================================*/
+const getRules = async settings => {
+    const { data } = await wwLib.$apollo.query({
+        query: GET_AUTH0_RULES,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+        },
+        fetchPolicy: 'network-only',
+    });
+    return data.getAuth0Rules.data;
+};
+
+const createRule = async (settings, ruleData) => {
+    const { data } = await wwLib.$apollo.mutate({
+        mutation: CREATE_AUTH0_RULE,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            data: ruleData,
+        },
+    });
+    return data.createAuth0Rule.data;
+};
+
+const checkRules = async settings => {
+    const rules = await getRules(settings);
+    const isUserRolesRule = rules.some(rule => rule.name === USER_ROLES_RULE.name);
+    const isUserMetaRule = rules.some(rule => rule.name === USER_META_RULE.name);
+    if (!isUserRolesRule) createRule(settings, USER_ROLES_RULE);
+    if (!isUserMetaRule) createRule(settings, USER_META_RULE);
+};
+
+const USER_ROLES_RULE = {
+    name: 'WeWeb - Enrich user with roles',
+    script: `function addRoles(user, context, callback) {
+    // Roles should only be set to verified users.
+    if (!user.email || !user.email_verified) {
+        return callback(null, user, context);
+    }
+
+    context.idToken['https://auth0.weweb.io/roles'] = context.authorization.roles;
+    context.accessToken['https://auth0.weweb.io/roles'] = context.authorization.roles;
+
+    return callback(null, user, context);
+}`,
+    enabled: true,
+};
+
+const USER_META_RULE = {
+    name: 'WeWeb - Enrich user with metadata',
+    script: `function addRoles(user, context, callback) {
+
+    context.idToken['https://auth0.weweb.io/metadata'] = user.user_metadata;
+    context.accessToken['https://auth0.weweb.io/metadata'] = user.user_metadata;
+
+    return callback(null, user, context);
+}`,
+    enabled: true,
+};
+
+/*=============================================m_ÔÔ_m=============================================\
+    Connections
+\================================================================================================*/
+export const getConnections = async settings => {
+    const { data } = await wwLib.$apollo.query({
+        query: GET_AUTH0_CONNECTIONS,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+        },
+        fetchPolicy: 'network-only',
+    });
+    return data.getAuth0Connections.data;
+};
+
+/*=============================================m_ÔÔ_m=============================================\
+    Users
+\================================================================================================*/
+const updateCurrentUser = async (settings, userData) => {
+    const { data } = await wwLib.$apollo.mutate({
+        mutation: UPDATE_CURRENT_USER,
+        variables: {
+            designId: settings.designId,
+            settingsId: settings.id,
+            data: userData,
+        },
+    });
+    return data.updateAuth0CurrentUser.data;
+};
+/* wwEditor:end */
