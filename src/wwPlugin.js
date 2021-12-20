@@ -152,7 +152,7 @@ export default {
     async changeUserPassword(connection, email) {
         if (!email) return;
 
-        const response = await axios.post(`${this.settings.publicData.domain}/dbconnections/change_password`, {
+        const response = await axios.post(`https://${this.settings.publicData.domain}/dbconnections/change_password`, {
             connection,
             email,
         });
