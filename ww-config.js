@@ -62,6 +62,7 @@ export default {
                 { name: 'Phone number', type: 'string' },
                 { name: 'Metadata', type: 'object' },
             ],
+            isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/UpdateCurrentUser.vue'),
             /* wwEditor:end */
@@ -73,6 +74,7 @@ export default {
                 { name: 'Database', type: 'string' },
                 { name: 'Email', type: 'string' },
             ],
+            isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/ChangePassword.vue'),
             getIsValid([connection, email]) {
