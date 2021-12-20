@@ -42,7 +42,10 @@ export default {
     },
     computed: {
         pagesOptions() {
-            return wwLib.wwWebsiteData.getPages().map(page => ({ label: page.name, value: page.id }));
+            return wwLib.wwWebsiteData
+                .getPages()
+                .filter(page => !page.cmsDataSetPath)
+                .map(page => ({ label: page.name, value: page.id }));
         },
     },
     methods: {
