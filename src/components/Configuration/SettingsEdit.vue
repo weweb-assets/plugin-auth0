@@ -2,7 +2,7 @@
     <div class="auth0-settings-edit">
         <wwEditorFormRow required label="Domain">
             <template #append-label>
-                <a class="auth0-settings-edit__link" href="https://manage.auth0.com/#/tenant/general" target="_blank">
+                <a class="auth0-settings-edit__link" href="https://manage.auth0.com/#/apis" target="_blank">
                     Find it here
                 </a>
             </template>
@@ -12,7 +12,7 @@
                 placeholder="tenant-name.us.auth0.com"
                 :model-value="settings.publicData.domain"
                 large
-                @update:modelValue="changePublicSettings('domain', $event)"
+                @update:modelValue="setDomain($event)"
             />
         </wwEditorFormRow>
         <wwEditorFormRow v-if="!settings.publicData.M2MClientId" required label="Token">
@@ -108,11 +108,9 @@ export default {
                 privateData: { ...this.settings.privateData, M2MClientSecret: client.client_secret },
             });
         },
-        changePublicSettings(key, value) {
-            this.$emit('update:settings', {
-                ...this.settings,
-                publicData: { ...this.settings.publicData, [key]: value },
-            });
+        setDomain(domain) {
+            domain = domain.replace('https://', '').replace('/api/v2/', '');
+            this.$emit('update:settings', { ...this.settings, publicData: { ...this.settings.publicData, domain } });
         },
         async onTokenChange() {
             this.isLoading = true;
