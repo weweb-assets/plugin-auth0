@@ -15,12 +15,10 @@
                 @update:modelValue="setDomain($event)"
             />
         </wwEditorFormRow>
+        <wwEditorFormRow v-if="!settings.publicData.M2MClientId" required label="Application Name">
+            <wwEditorInputText v-model="clientName" type="text" placeholder="Set an application name" large />
+        </wwEditorFormRow>
         <wwEditorFormRow v-if="!settings.publicData.M2MClientId" required label="Token">
-            <template #append-label>
-                <a class="auth0-settings-edit__link" href="https://manage.auth0.com/#/apis" target="_blank">
-                    Find it here
-                </a>
-            </template>
             <wwEditorInputText v-model="token" type="text" placeholder="" large @update:modelValue="onTokenChange" />
         </wwEditorFormRow>
         <template v-else>
@@ -55,6 +53,11 @@ export default {
         settings: { type: Object, required: true },
     },
     emits: ['update:settings'],
+    setup() {
+        return {
+            clientName: wwLib.wwWebsiteData.getWebsiteName(),
+        };
+    },
     data() {
         return {
             isLoading: false,
@@ -119,7 +122,7 @@ export default {
                 if (!this.SPAClients.length) {
                     const newClient = await createClient(
                         this.settings,
-                        SPA_CLIENT,
+                        { ...SPA_CLIENT, name: this.clientName },
                         this.settings.publicData.domain,
                         this.token
                     );
