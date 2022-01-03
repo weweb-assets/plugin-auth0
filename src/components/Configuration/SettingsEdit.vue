@@ -15,11 +15,11 @@
                 @update:modelValue="setDomain($event)"
             />
         </wwEditorFormRow>
-        <wwEditorFormRow v-if="!settings.publicData.M2MClientId" required label="Application Name">
-            <wwEditorInputText v-model="clientName" type="text" placeholder="Set an application name" large />
-        </wwEditorFormRow>
         <wwEditorFormRow v-if="!settings.publicData.M2MClientId" required label="Token">
             <wwEditorInputText v-model="token" type="text" placeholder="" large @update:modelValue="onTokenChange" />
+        </wwEditorFormRow>
+        <wwEditorFormRow v-if="!settings.publicData.M2MClientId" required label="Default Application Name">
+            <wwEditorInputText v-model="clientName" type="text" placeholder="Set a default application name" large />
         </wwEditorFormRow>
         <template v-else>
             <wwEditorFormRow required label="Single Page Application">
@@ -122,7 +122,7 @@ export default {
                 if (!this.SPAClients.length) {
                     const newClient = await createClient(
                         this.settings,
-                        { ...SPA_CLIENT, name: this.clientName },
+                        { ...SPA_CLIENT, name: this.clientName || wwLib.wwWebsiteData.getWebsiteName() },
                         this.settings.publicData.domain,
                         this.token
                     );
