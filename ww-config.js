@@ -49,26 +49,36 @@ export default {
         },
         { name: 'Logout', code: 'logout', parameters: [] },
         {
-            name: 'Update Current User',
-            code: 'updateCurrentUser',
+            name: 'Update User Profile',
+            code: 'updateUserProfile',
             parameters: [
-                { name: 'Email', type: 'string' },
                 { name: 'Family name', type: 'string' },
                 { name: 'Given name', type: 'string' },
                 { name: 'Nickname', type: 'string' },
                 { name: 'Username', type: 'string' },
                 { name: 'Name', type: 'string' },
                 { name: 'Picture', type: 'string' },
-                { name: 'Phone number', type: 'string' },
                 { name: 'Metadata', type: 'object' },
             ],
             isAsync: true,
             /* wwEditor:start */
-            edit: () => import('./src/components/Functions/UpdateCurrentUser.vue'),
+            edit: () => import('./src/components/Functions/UpdateUserProfile.vue'),
             /* wwEditor:end */
         },
         {
-            name: 'Change User Password',
+            name: 'Update User Email',
+            code: 'updateUserEmail',
+            parameters: [{ name: 'Email', type: 'string' }],
+            isAsync: true,
+            /* wwEditor:start */
+            edit: () => import('./src/components/Functions/UpdateUserEmail.vue'),
+            getIsValid([email]) {
+                return !!email;
+            },
+            /* wwEditor:end */
+        },
+        {
+            name: 'Chnage User Password',
             code: 'changeUserPassword',
             parameters: [
                 { name: 'Database', type: 'string' },
@@ -76,7 +86,7 @@ export default {
             ],
             isAsync: true,
             /* wwEditor:start */
-            edit: () => import('./src/components/Functions/ChangePassword.vue'),
+            edit: () => import('./src/components/Functions/ChangeUserPassword.vue'),
             getIsValid([connection, email]) {
                 return !!connection && !!email;
             },
