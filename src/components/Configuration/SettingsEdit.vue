@@ -53,16 +53,12 @@ export default {
         settings: { type: Object, required: true },
     },
     emits: ['update:settings'],
-    setup() {
-        return {
-            clientName: wwLib.wwWebsiteData.getWebsiteName(),
-        };
-    },
     data() {
         return {
             isLoading: false,
             clients: [],
             token: undefined,
+            clientName: wwLib.wwWebsiteData.getWebsiteName(),
         };
     },
     computed: {
