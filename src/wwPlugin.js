@@ -258,7 +258,7 @@ export const getSPAClientRedirection = settings => {
     };
     const origins = [
         `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}`,
-        customDomain && customDomain.name,
+        customDomain && customDomain.name && `https://${customDomain.name}`,
         `${window.location.origin}`,
     ].filter(item => item);
     return {
