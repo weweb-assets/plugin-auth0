@@ -16,12 +16,10 @@
             />
         </wwEditorFormRow>
         <wwEditorFormRow v-if="!settings.publicData.M2MClientId" required label="Token">
-            <template #append-label>
-                <a class="auth0-settings-edit__link" href="https://manage.auth0.com/#/apis" target="_blank">
-                    Find it here
-                </a>
-            </template>
             <wwEditorInputText v-model="token" type="text" placeholder="" large @update:modelValue="onTokenChange" />
+        </wwEditorFormRow>
+        <wwEditorFormRow v-if="!settings.publicData.M2MClientId" required label="Default Application Name">
+            <wwEditorInputText v-model="clientName" type="text" placeholder="Set a default application name" large />
         </wwEditorFormRow>
         <template v-else>
             <wwEditorFormRow required label="Single Page Application">
@@ -60,6 +58,7 @@ export default {
             isLoading: false,
             clients: [],
             token: undefined,
+            clientName: wwLib.wwWebsiteData.getWebsiteName(),
         };
     },
     computed: {
@@ -119,7 +118,7 @@ export default {
                 if (!this.SPAClients.length) {
                     const newClient = await createClient(
                         this.settings,
-                        SPA_CLIENT,
+                        { ...SPA_CLIENT, name: this.clientName || wwLib.wwWebsiteData.getWebsiteName() },
                         this.settings.publicData.domain,
                         this.token
                     );
