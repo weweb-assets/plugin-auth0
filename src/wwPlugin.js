@@ -6,8 +6,9 @@ import './components/Redirections/SettingsSummary.vue';
 import './components/Configuration/SettingsEdit.vue';
 import './components/Configuration/SettingsSummary.vue';
 import './components/Functions/Login.vue';
-import './components/Functions/ChangePassword.vue';
-import './components/Functions/UpdateCurrentUser.vue';
+import './components/Functions/ChangeUserPassword.vue';
+import './components/Functions/UpdateUserProfile.vue';
+import './components/Functions/UpdateUserEmail.vue';
 import {
     GET_AUTH0_ROLES,
     GET_AUTH0_CLIENTS,
@@ -159,16 +160,14 @@ export default {
 
         return response.data;
     },
-    async updateCurrentUser(email, familyName, givenName, nickname, username, name, picture, phoneNumber, metadata) {
+    async updateUserProfile(familyName, givenName, nickname, username, name, picture, metadata) {
         const data = {
-            email,
             familyName,
             givenName,
             nickname,
             username,
             name,
             picture,
-            phoneNumber,
             metadata: (metadata || []).reduce((obj, item) => ({ ...obj, [item.key]: item.value }), {}),
         };
         /* wwEditor:start */
@@ -189,6 +188,22 @@ export default {
             `${this.id}-user`,
             user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
         );
+    },
+    async updateUserEmail(email) {
+        const data = { email };
+        /* wwEditor:start */
+        await updateCurrentUser(this.settings, data);
+        /* wwEditor:end */
+        /* wwFront:start */
+        const websiteId = wwLib.wwWebsiteData.getInfo().id;
+        await axios.patch(
+            `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
+                this.settings.id
+            }/auth0/users/current`,
+            data
+        );
+        /* wwFront:end */
+        this.logout();
     },
 };
 
