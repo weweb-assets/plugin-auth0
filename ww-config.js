@@ -78,7 +78,7 @@ export default {
             /* wwEditor:end */
         },
         {
-            name: 'Chnage User Password',
+            name: 'Change User Password',
             code: 'changeUserPassword',
             parameters: [
                 { name: 'Database', type: 'string' },
