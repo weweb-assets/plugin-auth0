@@ -1,47 +1,71 @@
-To start setting-up Auth0 plugin, you need to follow these 4 steps:
+# Auth0 plugin
 
-#1 - Create a single page application
+To start setting-up Auth0 plugin in WeWeb, there are two pre-requisites: 
 
-Once you're logged in, go to Applications > Create application.
-![https://github.com/weweb-assets/plugin-auth0/blob/main/src/markdown/images/01-create-application.png?raw=true](https://github.com/weweb-assets/plugin-auth0/blob/main/src/markdown/images/01-create-application.png?raw=true)
+✅ 1- you already have an account with Auth0, it’s free for up to 7,000 active users
 
-Select Single Page Application.
-![https://github.com/weweb-assets/plugin-auth0/blob/main/src/markdown/images/02-single-page-application.png?raw=true](https://github.com/weweb-assets/plugin-auth0/blob/main/src/markdown/images/02-single-page-application.png?raw=true)
+✅ 2- you are logged into your Auth0 account
 
-Go to the app Settings, copy & paste the the Domain, the Client Id and the Client Secret in WeWeb.
-![https://github.com/weweb-assets/plugin-auth0/blob/main/src/markdown/images/03-copy-credentials.png?raw=true](https://github.com/weweb-assets/plugin-auth0/blob/main/src/markdown/images/03-copy-credentials.png?raw=true)
+Once that’s done, you can follow these 4 steps to start using Auth0 functionalities in WeWeb:
 
-#2 - Create a machine to machine application
+1. Connect your Auth0 account
+2. Define on what page logged in and logged out users land
+3. Define user groups to gate content
+4. Change page settings to gate content
 
-Go to Applications > Create application.
+# Step 1 – Connect your Auth0 account
 
-Select Machine to Machine Application.
-![https://i.imgur.com/rKDfqY6.png](https://i.imgur.com/rKDfqY6.png)
+To connect your Auth0 account to WeWeb, you’ll need to copy/paste 2 pieces of information from Auth0 in WeWeb:
 
-Select Auth0 Management API.
-![https://i.imgur.com/H4PubBC.png](https://i.imgur.com/H4PubBC.png)
+## 1- Your Auth0 domain
 
-Give all the permissions to your app.
-![https://i.imgur.com/EEKU6jw.png](https://i.imgur.com/EEKU6jw.png)
+👉 In Auth0, go to “Applications” > “APIs” and copy the URL for your API audience and paste it in WeWeb.
 
-Go to the app Settings, copy & paste the the Domain, the Client Id and the Client Secret in WeWeb.
-![https://i.imgur.com/jMe6xpd.png](https://i.imgur.com/jMe6xpd.png)
+## 2- Your Auth0 token
 
-#3 - Specify the login page
+👉 Back on the “APIs” screen in Auth0, click on “Auth0 Management API” > “API explorer” and copy/paste your token in WeWeb.
 
-The first page is the one to redirect the user to once his logged-in.
+<iframe src="https://www.youtube.com/embed/T9tL3AFF0FY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-The second one is your login page (be sure to create one now or come back later to edit it!).
-![https://i.imgur.com/jW2BsyI.png](https://i.imgur.com/jW2BsyI.png)
+# Step 2 – Define User Redirections
 
-#4 - Allow your website and the editor to connect
+👉 Select what pages you want users to see when:
 
-Copy & paste:
-- Allowed Callback URLs
-- Allowed Logout URLs
-- Allowed Web Origins
-- Allowed Origins (CORS) 
-from WeWeb in the corresponding fields inside the Single Page Application's settings in Auth0, and click Save.
+- they are logged out – for example a login page
+- they are signed in – for example a profile page
 
-![https://i.imgur.com/wgHXCox.png](https://i.imgur.com/wgHXCox.png)
-![https://i.imgur.com/9z6kbkI.png](https://i.imgur.com/9z6kbkI.png)
+![Screen Shot 2022-01-04 at 10.23.20.png](https://aws1.discourse-cdn.com/business6/uploads/weweb/original/1X/2792b1bbe0392a77338af833be8a9aff8d9e79a2.png)
+
+# Step 3 – Define User Groups
+
+👉 To define user groups in WeWeb, you first need to create user roles in Auth0 > “User Management” > “Roles” > “Create Role”
+
+![Screen Shot 2022-01-04 at 10.26.56.png](https://aws1.discourse-cdn.com/business6/uploads/weweb/original/1X/932ccc07cbe8cf259b1eaed56e8ab48bef6ff5d2.png)
+
+👉 Then, you can assign roles to users in “User Management” > “Users” > “Assign Roles”
+
+![Screen Shot 2022-01-04 at 10.36.25.png](https://aws1.discourse-cdn.com/business6/uploads/weweb/original/1X/1229d8ecfa3daba5eeb18dfe8cf859aa19d1c5df.png)
+
+Once you have user roles in Auth0, you can define user groups in WeWeb in two steps:
+
+👉  1- Name your WeWeb user group
+
+👉  2- Select Auth0 user role(s) that will be added to your WeWeb user group
+
+![Screen Shot 2022-01-04 at 11.18.57.png](https://aws1.discourse-cdn.com/business6/uploads/weweb/original/1X/1229d8ecfa3daba5eeb18dfe8cf859aa19d1c5df.png)
+
+# Step 4 – Manage Access To Pages Based on Login Status and User Roles
+
+By default, when you add a new empty page in your WeWeb app, everybody can access it, even users who have not signed in.
+
+You can limit access to your WeWeb app at page level. 
+
+![Screen Shot 2022-01-04 at 11.52.47.png](https://aws1.discourse-cdn.com/business6/uploads/weweb/original/1X/1229d8ecfa3daba5eeb18dfe8cf859aa19d1c5df.png)
+
+👉 Go to the page settings > “Private access”
+
+👉 Select if you need users to be authenticated to access the page
+
+👉 Select which authenticated user group(s) can access the page
+
+<iframe src="https://www.youtube.com/embed/39svXaRgtm8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
