@@ -40,13 +40,18 @@
                     @update:modelValue="setM2MClient($event)"
                 />
             </wwEditorFormRow>
+            <wwEditorFormRow v-if="!isProd">
+                <button type="button" class="ww-editor-button -primary -small" @click="setUpApps">
+                    Set-Up Auth0 applications
+                </button>
+            </wwEditorFormRow>
         </template>
         <wwLoader :loading="isLoading" />
     </div>
 </template>
 
 <script>
-import { getClients, createClient, SPA_CLIENT } from '../../wwPlugin.js';
+import { getClients, createClient, updateClient, getSPAClientRedirection, SPA_CLIENT } from '../../wwPlugin.js';
 
 export default {
     props: {
@@ -74,6 +79,9 @@ export default {
         M2MClientOptions() {
             return this.M2MClients.map(client => ({ label: client.name, value: client.client_id }));
         },
+        isProd() {
+            return wwLib.envMode === 'production';
+        },
     },
     async mounted() {
         this.isLoading = true;
@@ -89,6 +97,9 @@ export default {
         this.isLoading = false;
     },
     methods: {
+        setUpApps() {
+            updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
+        },
         setSPAClient(clientId) {
             const client = this.clients.find(client => client.client_id === clientId);
             if (!client) return;
