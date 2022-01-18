@@ -64,7 +64,8 @@ export default {
                 ? `${window.location.origin}/${website.id}/${page.id}`
                 : `${window.location.origin}/${website.id}/`;
         this.client = await createAuth0Client({ domain, client_id, redirect_uri: redirectUriEditor });
-        updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
+        if (wwLib.envMode === 'production')
+            updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
         checkRules(this.settings);
         /* wwEditor:end */
         /* wwFront:start */
