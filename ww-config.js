@@ -13,7 +13,7 @@ export default {
                 },
             },
             {
-                label: 'Define rediretions (URLs)',
+                label: 'Define redirections (URLs)',
                 icon: 'open-out',
                 edit: () => import('./src/components/Redirections/SettingsEdit.vue'),
                 summary: () => import('./src/components/Redirections/SettingsSummary.vue'),

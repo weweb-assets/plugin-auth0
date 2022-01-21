@@ -54,7 +54,12 @@ export default {
                 ...this.settings,
                 publicData: { ...this.settings.publicData, [key]: value },
             });
-            updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
+            if (wwLib.envMode === 'production')
+                updateClient(
+                    this.settings,
+                    this.settings.publicData.SPAClientId,
+                    getSPAClientRedirection(this.settings)
+                );
         },
         createPage() {
             // eslint-disable-next-line vue/custom-event-name-casing
