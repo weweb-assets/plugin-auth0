@@ -21,6 +21,8 @@ import {
 } from './graphql';
 /* wwEditor:end */
 
+const ACCESS_COOKIE_NAME = 'session';
+
 export default {
     /*=============================================m_ÔÔ_m=============================================\
         Plugin API
@@ -94,6 +96,8 @@ export default {
     async checkIsAuthenticated() {
         const isAuthenticated = await this.client.isAuthenticated();
         wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, isAuthenticated);
+        const accessToken = window.vm.config.globalProperties.$cookie.getCookie(ACCESS_COOKIE_NAME);
+        wwLib.wwVariable.updateValue(`${this.id}-accessToken`, accessToken);
         const user = await this.client.getUser();
         wwLib.wwVariable.updateValue(
             `${this.id}-user`,
@@ -137,10 +141,12 @@ export default {
     },
     removeCookieSession() {
         window.vm.config.globalProperties.$cookie.removeCookie('session');
+        wwLib.wwVariable.updateValue(`${this.id}-accessToken`, null);
     },
     async setCookieSession(token = null) {
         const sessionToken = token || (await this.client.getTokenSilently());
         window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken);
+        wwLib.wwVariable.updateValue(`${this.id}-accessToken`, sessionToken);
     },
     redirectAfterSignIn() {
         /* wwFront:start */
