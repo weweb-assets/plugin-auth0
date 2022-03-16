@@ -45,6 +45,7 @@ export default {
                 designId: this.settings.designId,
                 settingsId: this.settings.id,
             },
+            fetchPolicy: 'network-only',
         });
         return data.getAuth0Roles.data;
     },
@@ -55,6 +56,7 @@ export default {
                 designId: this.settings.designId,
                 settingsId: this.settings.id,
             },
+            fetchPolicy: 'network-only',
         });
         return data.getAuth0Users.data;
     },
