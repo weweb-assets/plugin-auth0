@@ -11,6 +11,7 @@ import './components/Functions/UpdateUserProfile.vue';
 import './components/Functions/UpdateUserEmail.vue';
 import {
     GET_AUTH0_ROLES,
+    GET_AUTH0_USERS,
     GET_AUTH0_CLIENTS,
     CREATE_AUTH0_CLIENT,
     UPDATE_AUTH0_CLIENT,
@@ -37,16 +38,25 @@ export default {
         Auth API
     \================================================================================================*/
     /* wwEditor:start */
-    async getRoles(isNoCache = false) {
+    async adminGetRoles() {
         const { data } = await wwLib.$apollo.query({
             query: GET_AUTH0_ROLES,
             variables: {
                 designId: this.settings.designId,
                 settingsId: this.settings.id,
             },
-            fetchPolicy: isNoCache ? 'network-only' : 'cache-first',
         });
-        return data.getAuth0Roles.data.map(role => ({ label: role.description, value: role.id }));
+        return data.getAuth0Roles.data;
+    },
+    async adminGetUsers() {
+        const { data } = await wwLib.$apollo.query({
+            query: GET_AUTH0_USERS,
+            variables: {
+                designId: this.settings.designId,
+                settingsId: this.settings.id,
+            },
+        });
+        return data.getAuth0User.data;
     },
     /* wwEditor:end */
     /*=============================================m_ÔÔ_m=============================================\
