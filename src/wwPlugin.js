@@ -56,7 +56,7 @@ export default {
                 settingsId: this.settings.id,
             },
         });
-        return data.getAuth0User.data;
+        return data.getAuth0Users.data;
     },
     /* wwEditor:end */
     /*=============================================m_ÔÔ_m=============================================\
