@@ -30,7 +30,7 @@ import { getConnections } from '../../wwPlugin.js';
 export default {
     props: {
         plugin: { type: Object, required: true },
-        args: { type: Array, default: () => [null, null] },
+        args: { type: Object, default: () => ({ connection: null, email: null }) },
     },
     emits: ['update:args'],
     data() {
@@ -41,10 +41,10 @@ export default {
     },
     computed: {
         connection() {
-            return this.args[0];
+            return this.args.connection;
         },
         email() {
-            return this.args[1];
+            return this.args.email;
         },
         connectionOptions() {
             return this.connections
@@ -64,10 +64,10 @@ export default {
     },
     methods: {
         setConnection(connection) {
-            this.$emit('update:args', [connection, this.email]);
+            this.$emit('update:args', { ...this.args, connection });
         },
         setEmail(email) {
-            this.$emit('update:args', [this.connection, email]);
+            this.$emit('update:args', { ...this.args, email });
         },
     },
 };
