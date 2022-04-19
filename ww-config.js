@@ -61,7 +61,7 @@ export default {
             isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/UpdateUserEmail.vue'),
-            getIsValid([email]) {
+            getIsValid({ email }) {
                 return !!email;
             },
             /* wwEditor:end */
@@ -72,7 +72,7 @@ export default {
             isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/ChangeUserPassword.vue'),
-            getIsValid([connection, email]) {
+            getIsValid({ connection, email }) {
                 return !!connection && !!email;
             },
             /* wwEditor:end */
