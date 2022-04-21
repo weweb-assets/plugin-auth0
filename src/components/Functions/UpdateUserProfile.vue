@@ -81,109 +81,64 @@
 export default {
     props: {
         plugin: { type: Object, required: true },
-        args: { type: Array, default: () => [null, null, null, null, null, null, []] },
+        args: {
+            type: Object,
+            default: () => ({
+                familyName: null,
+                givenName: null,
+                nickname: null,
+                username: null,
+                name: null,
+                picture: null,
+                metadata: [],
+            }),
+        },
     },
     emits: ['update:args'],
     computed: {
         familyName() {
-            return this.args[0];
+            return this.args.familyName;
         },
         givenName() {
-            return this.args[1];
+            return this.args.givenName;
         },
         nickname() {
-            return this.args[2];
+            return this.args.nickname;
         },
         username() {
-            return this.args[3];
+            return this.args.username;
         },
         name() {
-            return this.args[4];
+            return this.args.name;
         },
         picture() {
-            return this.args[5];
+            return this.args.picture;
         },
         metadata() {
-            return this.args[6] || [];
+            return this.args.metadata || [];
         },
     },
     methods: {
         setFamilyName(familyName) {
-            this.$emit('update:args', [
-                familyName,
-                this.givenName,
-                this.nickname,
-                this.username,
-                this.name,
-                this.picture,
-                this.metadata,
-            ]);
+            this.$emit('update:args', { ...this.args, familyName });
         },
         setGivenName(givenName) {
-            this.$emit('update:args', [
-                this.familyName,
-                givenName,
-                this.nickname,
-                this.username,
-                this.name,
-                this.picture,
-                this.metadata,
-            ]);
+            this.$emit('update:args', { ...this.args, givenName });
         },
         setNickname(nickname) {
-            this.$emit('update:args', [
-                this.familyName,
-                this.givenName,
-                nickname,
-                this.username,
-                this.name,
-                this.picture,
-                this.metadata,
-            ]);
+            this.$emit('update:args', { ...this.args, nickname });
         },
         setUsername(username) {
-            this.$emit('update:args', [
-                this.familyName,
-                this.givenName,
-                this.nickname,
-                username,
-                this.name,
-                this.picture,
-                this.metadata,
-            ]);
+            this.$emit('update:args', { ...this.args, username });
         },
         setName(name) {
-            this.$emit('update:args', [
-                this.familyName,
-                this.givenName,
-                this.nickname,
-                this.username,
-                name,
-                this.picture,
-                this.metadata,
-            ]);
+            this.$emit('update:args', { ...this.args, name });
         },
         setPicture(picture) {
-            this.$emit('update:args', [
-                this.familyName,
-                this.givenName,
-                this.nickname,
-                this.username,
-                this.name,
-                picture,
-                this.metadata,
-            ]);
+            this.$emit('update:args', { ...this.args, picture });
         },
         setMetadata(metadata) {
-            this.$emit('update:args', [
-                this.familyName,
-                this.givenName,
-                this.nickname,
-                this.username,
-                this.name,
-                this.picture,
-                metadata,
-            ]);
+            this.$emit('update:args', { ...this.args, metadata });
         },
     },
 };

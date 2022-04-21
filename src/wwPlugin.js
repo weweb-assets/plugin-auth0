@@ -116,7 +116,7 @@ export default {
             user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
         );
     },
-    async loginWithPopup(screen_hint) {
+    async loginWithPopup({ screen_hint }) {
         try {
             await this.client.loginWithPopup({ screen_hint });
             await this.setCookieSession();
@@ -127,7 +127,7 @@ export default {
             this.checkIsAuthenticated();
         }
     },
-    loginWithRedirect(screen_hint) {
+    loginWithRedirect({ screen_hint }) {
         /* wwFront:start */
         return this.client.loginWithRedirect({ screen_hint });
         /* wwFront:end */
@@ -169,7 +169,7 @@ export default {
         wwLib.goTo(this.settings.publicData.afterSignInPageId);
         /* wwEditor:end */
     },
-    async changeUserPassword(connection, email) {
+    async changeUserPassword({ connection, email }) {
         if (!email) return;
 
         const response = await axios.post(`https://${this.settings.publicData.domain}/dbconnections/change_password`, {
@@ -179,7 +179,7 @@ export default {
 
         return response.data;
     },
-    async updateUserProfile(familyName, givenName, nickname, username, name, picture, metadata) {
+    async updateUserProfile({ familyName, givenName, nickname, username, name, picture, metadata }) {
         const data = {
             familyName,
             givenName,
@@ -208,7 +208,7 @@ export default {
             user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
         );
     },
-    async updateUserEmail(email) {
+    async updateUserEmail({ email }) {
         const data = { email };
         /* wwEditor:start */
         await updateCurrentUser(this.settings, data);

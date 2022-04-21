@@ -8,7 +8,7 @@
 export default {
     props: {
         plugin: { type: Object, required: true },
-        args: { type: Array, default: () => [null] },
+        args: { type: Object, required: true },
     },
     emits: ['update:args'],
     data() {
@@ -21,12 +21,15 @@ export default {
     },
     computed: {
         screenHint() {
-            return this.args[0];
+            return this.args.screenHint;
         },
+    },
+    mounted() {
+        if (!this.screenHint) this.setScreenHint('login');
     },
     methods: {
         setScreenHint(screenHint) {
-            this.$emit('update:args', [screenHint]);
+            this.$emit('update:args', { screenHint });
         },
     },
 };

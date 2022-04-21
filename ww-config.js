@@ -30,11 +30,10 @@ export default {
         { name: 'accessToken', value: 'token', type: 'accessToken', defaultValue: null },
         { name: 'isAuthenticated', value: 'isAuthenticated', type: 'boolean', defaultValue: false },
     ],
-    functions: [
+    actions: [
         {
             name: 'Login with Popup',
             code: 'loginWithPopup',
-            parameters: [{ name: 'screenHint', type: 'string' }],
             isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/Login.vue'),
@@ -43,24 +42,14 @@ export default {
         {
             name: 'Login with Redirect',
             code: 'loginWithRedirect',
-            parameters: [{ name: 'screenHint', type: 'string' }],
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/Login.vue'),
             /* wwEditor:end */
         },
-        { name: 'Logout', code: 'logout', parameters: [] },
+        { name: 'Logout', code: 'logout' },
         {
             name: 'Update User Profile',
             code: 'updateUserProfile',
-            parameters: [
-                { name: 'Family name', type: 'string' },
-                { name: 'Given name', type: 'string' },
-                { name: 'Nickname', type: 'string' },
-                { name: 'Username', type: 'string' },
-                { name: 'Name', type: 'string' },
-                { name: 'Picture', type: 'string' },
-                { name: 'Metadata', type: 'object' },
-            ],
             isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/UpdateUserProfile.vue'),
@@ -69,11 +58,10 @@ export default {
         {
             name: 'Update User Email',
             code: 'updateUserEmail',
-            parameters: [{ name: 'Email', type: 'string' }],
             isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/UpdateUserEmail.vue'),
-            getIsValid([email]) {
+            getIsValid({ email }) {
                 return !!email;
             },
             /* wwEditor:end */
@@ -81,14 +69,10 @@ export default {
         {
             name: 'Change User Password',
             code: 'changeUserPassword',
-            parameters: [
-                { name: 'Database', type: 'string' },
-                { name: 'Email', type: 'string' },
-            ],
             isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/ChangeUserPassword.vue'),
-            getIsValid([connection, email]) {
+            getIsValid({ connection, email }) {
                 return !!connection && !!email;
             },
             /* wwEditor:end */
