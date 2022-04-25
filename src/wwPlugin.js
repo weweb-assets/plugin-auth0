@@ -143,8 +143,7 @@ export default {
         const page = wwLib.wwWebsiteData
             .getPages()
             .find(page => page.id === this.settings.publicData.afterNotSignInPageId);
-        this.client.logout();
-        wwLib.getEditorWindow().location = `/${website.id}/${page.id}`;
+        this.client.logout({ returnTo: `${window.location.origin}/${website.id}/${page.id}` });
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(this.settings.publicData.afterNotSignInPageId);
