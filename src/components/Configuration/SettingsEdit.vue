@@ -40,6 +40,16 @@
                     @update:modelValue="setM2MClient($event)"
                 />
             </wwEditorFormRow>
+            <wwEditorFormRow label="Custom domain">
+                <wwEditorInputText
+                    type="text"
+                    name="custom-domain"
+                    placeholder="auth.domain.com"
+                    :model-value="settings.publicData.customDomain"
+                    large
+                    @update:modelValue="setCustomDomain($event)"
+                />
+            </wwEditorFormRow>
             <wwEditorFormRow v-if="!isProd">
                 <button type="button" class="ww-editor-button -primary -small" @click="setUpApps">
                     Set-Up Auth0 applications
@@ -121,6 +131,13 @@ export default {
         setDomain(domain) {
             domain = domain.replace('https://', '').replace('/api/v2/', '');
             this.$emit('update:settings', { ...this.settings, publicData: { ...this.settings.publicData, domain } });
+        },
+        setCustomDomain(customDomain) {
+            customDomain = customDomain.replace('https://', '');
+            this.$emit('update:settings', {
+                ...this.settings,
+                publicData: { ...this.settings.publicData, customDomain },
+            });
         },
         async onTokenChange() {
             this.isLoading = true;

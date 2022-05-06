@@ -66,8 +66,8 @@ export default {
     \================================================================================================*/
     client: null,
     async createClient() {
-        const { domain, SPAClientId: client_id, afterSignInPageId } = this.settings.publicData;
-        if (!domain || !client_id) return;
+        const { domain, customDomain, SPAClientId: client_id, afterSignInPageId } = this.settings.publicData;
+        if ((!domain && !customDomain) || !client_id) return;
 
         /* wwEditor:start */
         const website = wwLib.wwWebsiteData.getInfo();
@@ -77,7 +77,11 @@ export default {
             page && !isHomePage
                 ? `${window.location.origin}/${website.id}/${page.id}`
                 : `${window.location.origin}/${website.id}/`;
-        this.client = await createAuth0Client({ domain, client_id, redirect_uri: redirectUriEditor });
+        this.client = await createAuth0Client({
+            domain: customDomain || domain,
+            client_id,
+            redirect_uri: redirectUriEditor,
+        });
         if (wwLib.envMode === 'production')
             updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
         checkRules(this.settings);
@@ -85,7 +89,7 @@ export default {
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId);
         this.client = await createAuth0Client({
-            domain,
+            domain: customDomain || domain,
             client_id,
             redirect_uri: `${window.location.origin}${pagePath}`,
         });

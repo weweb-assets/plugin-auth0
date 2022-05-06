@@ -3,7 +3,9 @@
         <wwEditorFormRow label="Domain">
             <div class="auth0-settings-summary__elem">
                 <div><wwEditorIcon large name="link" class="auth0-settings-summary__icon" /></div>
-                <span class="auth0-settings-summary__value caption-m">{{ settings.publicData.domain }}</span>
+                <span class="auth0-settings-summary__value caption-m">
+                    {{ settings.publicData.customDomain || settings.publicData.domain }}
+                </span>
             </div>
         </wwEditorFormRow>
     </div>
