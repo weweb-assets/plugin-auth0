@@ -87,7 +87,8 @@ export default {
         checkRules(this.settings);
         /* wwEditor:end */
         /* wwFront:start */
-        const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId);
+        const defaultLang = wwLib.wwWebsiteData.getInfo().langs.find(lang => lang.default)
+        const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId, defaultLang.lang);
         this.client = await createAuth0Client({
             domain: customDomain || domain,
             client_id,
