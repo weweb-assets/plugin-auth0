@@ -121,9 +121,9 @@ export default {
             user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
         );
     },
-    async loginWithPopup({ screen_hint }) {
+    async loginWithPopup({ screen_hint, organization }) {
         try {
-            await this.client.loginWithPopup({ screen_hint });
+            await this.client.loginWithPopup({ screen_hint, organization });
             await this.setCookieSession();
             this.redirectAfterSignIn();
         } catch (err) {
@@ -132,13 +132,13 @@ export default {
             this.checkIsAuthenticated();
         }
     },
-    loginWithRedirect({ screen_hint }) {
+    loginWithRedirect({ screen_hint, organization }) {
         /* wwFront:start */
-        return this.client.loginWithRedirect({ screen_hint });
+        return this.client.loginWithRedirect({ screen_hint, organization });
         /* wwFront:end */
         /* wwEditor:start */
         // eslint-disable-next-line no-unreachable
-        return this.loginWithPopup([screen_hint]);
+        return this.loginWithPopup({ screen_hint, organization });
         /* wwEditor:end */
     },
     logout() {
