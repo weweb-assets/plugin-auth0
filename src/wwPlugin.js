@@ -82,21 +82,21 @@ export default {
             clientId: client_id,
             authorizationParams: {
                 redirect_uri: redirectUriEditor,
-            }
+            },
         });
         if (wwLib.envMode === 'production')
             updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
         checkRules(this.settings);
         /* wwEditor:end */
         /* wwFront:start */
-        const defaultLang = wwLib.wwWebsiteData.getInfo().langs.find(lang => lang.default)
+        const defaultLang = wwLib.wwWebsiteData.getInfo().langs.find(lang => lang.default);
         const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId, defaultLang.lang);
         this.client = await createAuth0Client({
             domain: customDomain || domain,
             clientId: client_id,
             authorizationParams: {
                 redirect_uri: `${window.location.origin}${pagePath}`,
-            }
+            },
         });
         /* wwFront:end */
     },
@@ -127,11 +127,11 @@ export default {
     },
     async loginWithPopup({ screenHint, organization }) {
         try {
-            await this.client.loginWithPopup({ 
+            await this.client.loginWithPopup({
                 authorizationParams: {
                     screen_hint: screenHint,
                 },
-                organization 
+                organization,
             });
             await this.setCookieSession();
             this.redirectAfterSignIn();
@@ -143,16 +143,16 @@ export default {
     },
     loginWithRedirect({ screenHint, organization }) {
         /* wwFront:start */
-        return this.client.loginWithRedirect({ 
+        return this.client.loginWithRedirect({
             authorizationParams: {
                 screen_hint: screenHint,
             },
-            organization 
+            organization,
         });
         /* wwFront:end */
         /* wwEditor:start */
         // eslint-disable-next-line no-unreachable
-        return this.loginWithPopup({ screen_hint: screenHint, organization });
+        return this.loginWithPopup({ screenHint, organization });
         /* wwEditor:end */
     },
     logout() {
@@ -166,12 +166,12 @@ export default {
         this.client.logout({
             logoutParams: {
                 returnTo: `${window.location.origin}/${website.id}/${page.id === homePageId ? '' : page.id}`,
-            }
+            },
         });
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(this.settings.publicData.afterNotSignInPageId);
-        return this.client.logout({ logoutParams: {returnTo: `${window.location.origin}${pagePath}` }});
+        return this.client.logout({ logoutParams: { returnTo: `${window.location.origin}${pagePath}` } });
         /* wwFront:end */
     },
     removeCookieSession() {
