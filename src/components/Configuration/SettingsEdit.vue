@@ -109,6 +109,12 @@ export default {
             return wwLib.envMode === 'production';
         },
     },
+    watch: {
+        'settings.publicData'() {
+            // refresh client
+            wwLib.wwPlugins.auth0.createClient();
+        },
+    },
     async mounted() {
         this.isLoading = true;
         try {
