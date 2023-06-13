@@ -123,7 +123,12 @@ export default {
     },
     async loginWithPopup({ screen_hint, organization }) {
         try {
-            await this.client.loginWithPopup({ screen_hint, organization });
+            await this.client.loginWithPopup({ 
+                authorizationParams: {
+                    screen_hint,
+                },
+                organization 
+            });
             await this.setCookieSession();
             this.redirectAfterSignIn();
         } catch (err) {
@@ -134,7 +139,12 @@ export default {
     },
     loginWithRedirect({ screen_hint, organization }) {
         /* wwFront:start */
-        return this.client.loginWithRedirect({ screen_hint, organization });
+        return this.client.loginWithRedirect({ 
+            authorizationParams: {
+                screen_hint,
+            },
+            organization 
+        });
         /* wwFront:end */
         /* wwEditor:start */
         // eslint-disable-next-line no-unreachable
