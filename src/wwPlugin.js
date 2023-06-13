@@ -125,11 +125,11 @@ export default {
             user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
         );
     },
-    async loginWithPopup({ screen_hint, organization }) {
+    async loginWithPopup({ screenHint, organization }) {
         try {
             await this.client.loginWithPopup({ 
                 authorizationParams: {
-                    screen_hint,
+                    screen_hint: screenHint,
                 },
                 organization 
             });
@@ -141,18 +141,18 @@ export default {
             this.checkIsAuthenticated();
         }
     },
-    loginWithRedirect({ screen_hint, organization }) {
+    loginWithRedirect({ screenHint, organization }) {
         /* wwFront:start */
         return this.client.loginWithRedirect({ 
             authorizationParams: {
-                screen_hint,
+                screen_hint: screenHint,
             },
             organization 
         });
         /* wwFront:end */
         /* wwEditor:start */
         // eslint-disable-next-line no-unreachable
-        return this.loginWithPopup({ screen_hint, organization });
+        return this.loginWithPopup({ screen_hint: screenHint, organization });
         /* wwEditor:end */
     },
     logout() {
