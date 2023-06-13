@@ -1,4 +1,4 @@
-import createAuth0Client from '@auth0/auth0-spa-js';
+import { createAuth0Client } from '@auth0/auth0-spa-js';
 
 /* wwEditor:start */
 import './components/Redirections/SettingsEdit.vue';
@@ -79,8 +79,10 @@ export default {
                 : `${window.location.origin}/${website.id}/`;
         this.client = await createAuth0Client({
             domain: customDomain || domain,
-            client_id,
-            redirect_uri: redirectUriEditor,
+            clientId: client_id,
+            authorizationParams: {
+                redirect_uri: redirectUriEditor,
+            }
         });
         if (wwLib.envMode === 'production')
             updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
@@ -91,8 +93,10 @@ export default {
         const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId, defaultLang.lang);
         this.client = await createAuth0Client({
             domain: customDomain || domain,
-            client_id,
-            redirect_uri: `${window.location.origin}${pagePath}`,
+            clientId: client_id,
+            authorizationParams: {
+                redirect_uri: `${window.location.origin}${pagePath}`,
+            }
         });
         /* wwFront:end */
     },
@@ -160,12 +164,14 @@ export default {
             .getPages()
             .find(page => page.id === this.settings.publicData.afterNotSignInPageId);
         this.client.logout({
-            returnTo: `${window.location.origin}/${website.id}/${page.id === homePageId ? '' : page.id}`,
+            logoutParams: {
+                returnTo: `${window.location.origin}/${website.id}/${page.id === homePageId ? '' : page.id}`,
+            }
         });
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(this.settings.publicData.afterNotSignInPageId);
-        return this.client.logout({ returnTo: `${window.location.origin}${pagePath}` });
+        return this.client.logout({ logoutParams: {returnTo: `${window.location.origin}${pagePath}` }});
         /* wwFront:end */
     },
     removeCookieSession() {
@@ -218,7 +224,7 @@ export default {
             data
         );
         /* wwFront:end */
-        await wwLib.wwPlugins.auth0.client.getTokenSilently({ ignoreCache: true });
+        await wwLib.wwPlugins.auth0.client.getTokenSilently({ cacheMode: 'off' });
         const user = await this.client.getUser();
         wwLib.wwVariable.updateValue(
             `${this.id}-user`,
