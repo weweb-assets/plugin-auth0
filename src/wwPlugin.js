@@ -66,7 +66,14 @@ export default {
     \================================================================================================*/
     client: null,
     async createClient() {
-        const { domain, customDomain, SPAClientId: client_id, afterSignInPageId } = this.settings.publicData;
+        const {
+            domain,
+            customDomain,
+            SPAClientId: client_id,
+            afterSignInPageId,
+            audience,
+            scope,
+        } = this.settings.publicData;
         if ((!domain && !customDomain) || !client_id) return;
 
         /* wwEditor:start */
@@ -81,6 +88,8 @@ export default {
             domain: customDomain || domain,
             clientId: client_id,
             authorizationParams: {
+                audience,
+                scope: scope || 'openid profile email',
                 redirect_uri: redirectUriEditor,
             },
         });
@@ -95,6 +104,8 @@ export default {
             domain: customDomain || domain,
             clientId: client_id,
             authorizationParams: {
+                audience,
+                scope: scope || 'openid profile email',
                 redirect_uri: `${window.location.origin}${pagePath}`,
             },
         });

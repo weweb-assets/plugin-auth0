@@ -50,6 +50,22 @@
                     @update:modelValue="setCustomDomain($event)"
                 />
             </wwEditorFormRow>
+            <wwEditorFormRow label="Audience">
+                <wwEditorInputText
+                    placeholder="https://test-api"
+                    :model-value="settings.publicData.audience"
+                    large
+                    @update:modelValue="setAudience($event)"
+                />
+            </wwEditorFormRow>
+            <wwEditorFormRow label="Scope">
+                <wwEditorInputText
+                    placeholder="Default: openid profile email"
+                    :model-value="settings.publicData.scope"
+                    large
+                    @update:modelValue="setScope($event)"
+                />
+            </wwEditorFormRow>
             <wwEditorFormRow v-if="!isProd">
                 <button type="button" class="ww-editor-button -primary -small" @click="setUpApps">
                     Set-Up Auth0 applications
@@ -93,6 +109,12 @@ export default {
             return wwLib.envMode === 'production';
         },
     },
+    watch: {
+        'settings.publicData'() {
+            // refresh client
+            wwLib.wwPlugins.auth0.createClient();
+        },
+    },
     async mounted() {
         this.isLoading = true;
         try {
@@ -131,6 +153,12 @@ export default {
         setDomain(domain) {
             domain = domain.replace('https://', '').replace('/api/v2/', '');
             this.$emit('update:settings', { ...this.settings, publicData: { ...this.settings.publicData, domain } });
+        },
+        setAudience(audience) {
+            this.$emit('update:settings', { ...this.settings, publicData: { ...this.settings.publicData, audience } });
+        },
+        setScope(scope) {
+            this.$emit('update:settings', { ...this.settings, publicData: { ...this.settings.publicData, scope } });
         },
         setCustomDomain(customDomain) {
             customDomain = customDomain.replace('https://', '');
