@@ -60,7 +60,7 @@
             </wwEditorFormRow>
             <wwEditorFormRow label="Scope">
                 <wwEditorInputText
-                    placeholder="Default : openid profile email'"
+                    placeholder="Default: openid profile email"
                     :model-value="settings.publicData.scope"
                     large
                     @update:modelValue="setScope($event)"
