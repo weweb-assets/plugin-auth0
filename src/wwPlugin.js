@@ -1,4 +1,4 @@
-import createAuth0Client from '@auth0/auth0-spa-js';
+import { createAuth0Client } from '@auth0/auth0-spa-js';
 
 /* wwEditor:start */
 import './components/Redirections/SettingsEdit.vue';
@@ -66,7 +66,14 @@ export default {
     \================================================================================================*/
     client: null,
     async createClient() {
-        const { domain, customDomain, SPAClientId: client_id, afterSignInPageId } = this.settings.publicData;
+        const {
+            domain,
+            customDomain,
+            SPAClientId: client_id,
+            afterSignInPageId,
+            audience,
+            scope,
+        } = this.settings.publicData;
         if ((!domain && !customDomain) || !client_id) return;
 
         /* wwEditor:start */
@@ -79,20 +86,28 @@ export default {
                 : `${window.location.origin}/${website.id}/`;
         this.client = await createAuth0Client({
             domain: customDomain || domain,
-            client_id,
-            redirect_uri: redirectUriEditor,
+            clientId: client_id,
+            authorizationParams: {
+                audience,
+                scope: scope || 'openid profile email',
+                redirect_uri: redirectUriEditor,
+            },
         });
         if (wwLib.envMode === 'production')
             updateClient(this.settings, this.settings.publicData.SPAClientId, getSPAClientRedirection(this.settings));
         checkRules(this.settings);
         /* wwEditor:end */
         /* wwFront:start */
-        const defaultLang = wwLib.wwWebsiteData.getInfo().langs.find(lang => lang.default)
+        const defaultLang = wwLib.wwWebsiteData.getInfo().langs.find(lang => lang.default);
         const pagePath = wwLib.wwPageHelper.getPagePath(afterSignInPageId, defaultLang.lang);
         this.client = await createAuth0Client({
             domain: customDomain || domain,
-            client_id,
-            redirect_uri: `${window.location.origin}${pagePath}`,
+            clientId: client_id,
+            authorizationParams: {
+                audience,
+                scope: scope || 'openid profile email',
+                redirect_uri: `${window.location.origin}${pagePath}`,
+            },
         });
         /* wwFront:end */
     },
@@ -121,9 +136,14 @@ export default {
             user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
         );
     },
-    async loginWithPopup({ screen_hint, organization }) {
+    async loginWithPopup({ screenHint, organization }) {
         try {
-            await this.client.loginWithPopup({ screen_hint, organization });
+            await this.client.loginWithPopup({
+                authorizationParams: {
+                    screen_hint: screenHint,
+                },
+                organization,
+            });
             await this.setCookieSession();
             this.redirectAfterSignIn();
         } catch (err) {
@@ -132,13 +152,18 @@ export default {
             this.checkIsAuthenticated();
         }
     },
-    loginWithRedirect({ screen_hint, organization }) {
+    loginWithRedirect({ screenHint, organization }) {
         /* wwFront:start */
-        return this.client.loginWithRedirect({ screen_hint, organization });
+        return this.client.loginWithRedirect({
+            authorizationParams: {
+                screen_hint: screenHint,
+            },
+            organization,
+        });
         /* wwFront:end */
         /* wwEditor:start */
         // eslint-disable-next-line no-unreachable
-        return this.loginWithPopup({ screen_hint, organization });
+        return this.loginWithPopup({ screenHint, organization });
         /* wwEditor:end */
     },
     logout() {
@@ -150,12 +175,14 @@ export default {
             .getPages()
             .find(page => page.id === this.settings.publicData.afterNotSignInPageId);
         this.client.logout({
-            returnTo: `${window.location.origin}/${website.id}/${page.id === homePageId ? '' : page.id}`,
+            logoutParams: {
+                returnTo: `${window.location.origin}/${website.id}/${page.id === homePageId ? '' : page.id}`,
+            },
         });
         /* wwEditor:end */
         /* wwFront:start */
         const pagePath = wwLib.wwPageHelper.getPagePath(this.settings.publicData.afterNotSignInPageId);
-        return this.client.logout({ returnTo: `${window.location.origin}${pagePath}` });
+        return this.client.logout({ logoutParams: { returnTo: `${window.location.origin}${pagePath}` } });
         /* wwFront:end */
     },
     removeCookieSession() {
@@ -208,7 +235,7 @@ export default {
             data
         );
         /* wwFront:end */
-        await wwLib.wwPlugins.auth0.client.getTokenSilently({ ignoreCache: true });
+        await wwLib.wwPlugins.auth0.client.getTokenSilently({ cacheMode: 'off' });
         const user = await this.client.getUser();
         wwLib.wwVariable.updateValue(
             `${this.id}-user`,
