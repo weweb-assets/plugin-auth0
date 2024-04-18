@@ -217,12 +217,11 @@ export default {
 
         return response.data;
     },
-    async updateUserProfile({ familyName, givenName, nickname, username, name, picture, metadata }) {
+    async updateUserProfile({ familyName, givenName, nickname, name, picture, metadata }) {
         const data = {
             familyName,
             givenName,
             nickname,
-            username,
             name,
             picture,
             metadata: (metadata || []).reduce((obj, item) => ({ ...obj, [item.key]: item.value }), {}),

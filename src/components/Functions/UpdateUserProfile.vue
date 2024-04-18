@@ -32,14 +32,6 @@
         @update:modelValue="setNickname"
     />
     <wwEditorInputRow
-        label="Username"
-        type="query"
-        :model-value="username"
-        bindable
-        placeholder="Enter a value"
-        @update:modelValue="setUsername"
-    />
-    <wwEditorInputRow
         label="Picture"
         type="query"
         :model-value="picture"
@@ -87,7 +79,6 @@ export default {
                 familyName: null,
                 givenName: null,
                 nickname: null,
-                username: null,
                 name: null,
                 picture: null,
                 metadata: [],
@@ -104,9 +95,6 @@ export default {
         },
         nickname() {
             return this.args.nickname;
-        },
-        username() {
-            return this.args.username;
         },
         name() {
             return this.args.name;
@@ -127,9 +115,6 @@ export default {
         },
         setNickname(nickname) {
             this.$emit('update:args', { ...this.args, nickname });
-        },
-        setUsername(username) {
-            this.$emit('update:args', { ...this.args, username });
         },
         setName(name) {
             this.$emit('update:args', { ...this.args, name });
