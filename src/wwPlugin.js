@@ -191,7 +191,11 @@ export default {
     },
     async setCookieSession(token = null) {
         const sessionToken = token || (await this.client.getTokenSilently());
-        window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken);
+        window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken, {
+            /* wwEditor:start */
+            domain: window.location.hostname.replace('editor.', ''),
+            /* wwEditor:end */
+        });
         wwLib.wwVariable.updateValue(`${this.id}-accessToken`, sessionToken);
     },
     redirectAfterSignIn() {
