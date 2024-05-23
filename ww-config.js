@@ -1,4 +1,7 @@
 export default {
+    features: {
+        auth: true,
+    },
     editor: {
         settings: [
             {
@@ -12,24 +15,10 @@ export default {
                     return !!domain && !!SPAClientId && !!SPAClientSecret && !!M2MClientId && !!M2MClientSecret;
                 },
             },
-            {
-                label: 'Define redirections (URLs)',
-                icon: 'open-out',
-                edit: () => import('./src/components/Redirections/SettingsEdit.vue'),
-                summary: () => import('./src/components/Redirections/SettingsSummary.vue'),
-                getIsValid(settings) {
-                    const { afterSignInPageId, afterNotSignInPageId } = settings.publicData;
-                    return !!afterSignInPageId && !!afterNotSignInPageId;
-                },
-            },
         ],
         designSystemId: 'ec2eebfe-499b-43c4-b260-80ee5a4d9504',
     },
-    variables: [
-        { name: 'user', value: 'user', type: 'object', defaultValue: null },
-        { name: 'accessToken', value: 'token', type: 'accessToken', defaultValue: null },
-        { name: 'isAuthenticated', value: 'isAuthenticated', type: 'boolean', defaultValue: false },
-    ],
+    variables: [{ name: 'accessToken', value: 'token', type: 'accessToken', defaultValue: null }],
     actions: [
         {
             name: 'Login with Popup',
