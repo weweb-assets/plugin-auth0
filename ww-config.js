@@ -18,7 +18,11 @@ export default {
         ],
         designSystemId: 'ec2eebfe-499b-43c4-b260-80ee5a4d9504',
     },
-    variables: [{ name: 'accessToken', value: 'token', type: 'accessToken', defaultValue: null }],
+    variables: [
+        { name: 'user', value: 'user', type: 'object', defaultValue: null },
+        { name: 'accessToken', value: 'token', type: 'accessToken', defaultValue: null },
+        { name: 'isAuthenticated', value: 'isAuthenticated', type: 'boolean', defaultValue: false },
+    ],
     actions: [
         {
             name: 'Login with Popup',
