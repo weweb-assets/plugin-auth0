@@ -34,7 +34,7 @@ export default {
         await this.checkRedirectCallback();
         await this.checkIsAuthenticated();
     },
-    _getUserRoles: () => {
+    _getUserRoles() {
         return this.user?.roles || [];
     },
 
