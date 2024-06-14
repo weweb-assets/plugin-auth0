@@ -37,6 +37,9 @@ export default {
     _getUserRoles() {
         return this.user?.roles || [];
     },
+    _matchRoles(roles) {
+        return roles.every(role => this.user?.roles.includes(role));
+    },
 
     /*=============================================m_ÔÔ_m=============================================\
         Auth API
