@@ -76,7 +76,7 @@ export default {
 <style lang="scss" scoped>
 .auth0-functions {
     &__link {
-        color: var(--ww-color-blue-500);
+        color: var(--ww-color-content-brand);
         margin-left: var(--ww-spacing-02);
     }
 }
