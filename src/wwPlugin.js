@@ -1,8 +1,6 @@
 import { createAuth0Client } from '@auth0/auth0-spa-js';
 
 /* wwEditor:start */
-import './components/Redirections/SettingsEdit.vue';
-import './components/Redirections/SettingsSummary.vue';
 import './components/Configuration/SettingsEdit.vue';
 import './components/Configuration/SettingsSummary.vue';
 import './components/Functions/Login.vue';
@@ -28,17 +26,26 @@ export default {
     /*=============================================m_ÔÔ_m=============================================\
         Plugin API
     \================================================================================================*/
-    async onLoad() {
+    async _onLoad() {
         await this.createClient();
+    },
+    async _initAuth() {
         if (!this.client) return;
         await this.checkRedirectCallback();
         await this.checkIsAuthenticated();
     },
+    _getUserRoles() {
+        return this.user?.roles || [];
+    },
+    _matchRoles(roles) {
+        return roles.every(role => this.user?.roles.includes(role));
+    },
+
     /*=============================================m_ÔÔ_m=============================================\
         Auth API
     \================================================================================================*/
     /* wwEditor:start */
-    async adminGetRoles() {
+    async _adminGetRoles() {
         const { data } = await wwLib.$apollo.query({
             query: GET_AUTH0_ROLES,
             variables: {
@@ -49,7 +56,7 @@ export default {
         });
         return data.getAuth0Roles.data;
     },
-    async adminGetUsers() {
+    async _adminGetUsers() {
         const { data } = await wwLib.$apollo.query({
             query: GET_AUTH0_USERS,
             variables: {

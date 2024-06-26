@@ -1,4 +1,7 @@
 export default {
+    features: {
+        auth: true,
+    },
     editor: {
         settings: [
             {
@@ -10,16 +13,6 @@ export default {
                     const { domain, SPAClientId, M2MClientId } = settings.publicData;
                     const { SPAClientSecret, M2MClientSecret } = settings.privateData;
                     return !!domain && !!SPAClientId && !!SPAClientSecret && !!M2MClientId && !!M2MClientSecret;
-                },
-            },
-            {
-                label: 'Define redirections (URLs)',
-                icon: 'open-out',
-                edit: () => import('./src/components/Redirections/SettingsEdit.vue'),
-                summary: () => import('./src/components/Redirections/SettingsSummary.vue'),
-                getIsValid(settings) {
-                    const { afterSignInPageId, afterNotSignInPageId } = settings.publicData;
-                    return !!afterSignInPageId && !!afterNotSignInPageId;
                 },
             },
         ],
