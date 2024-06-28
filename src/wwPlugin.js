@@ -120,10 +120,9 @@ export default {
     },
     async checkRedirectCallback() {
         try {
-            const router = wwLib.manager ? wwLib.getEditorRouter() : wwLib.getFrontRouter();
-            await router.isReady();
-            const { code, state } = router.currentRoute.value.query;
-            if (code && state) {
+            const _window = wwLib.manager ? wwLib.getEditorWindow() : wwLib.getFrontWindow();
+            const params = new URLSearchParams(_window.location.search);
+            if (params.has('code') && params.has('state')) {
                 await this.client.handleRedirectCallback();
                 await this.setCookieSession();
                 this.redirectAfterSignIn();
