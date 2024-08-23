@@ -197,7 +197,14 @@ export default {
     },
     async setCookieSession(token = null) {
         const sessionToken = token || (await this.client.getTokenSilently());
-        window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken);
+        window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken, {
+            domain:
+                wwLib.globalContext.browser.environment === 'editor'
+                    ? window.location.hostname.replace('editor', '')
+                    : '.' + wwLib.wwApiRequests._getPreviewUrl(),
+            secure: true,
+            sameSite: 'Lax',
+        });
         wwLib.wwVariable.updateValue(`${this.id}-accessToken`, sessionToken);
     },
     redirectAfterSignIn() {
