@@ -198,10 +198,7 @@ export default {
     async setCookieSession(token = null) {
         const sessionToken = token || (await this.client.getTokenSilently());
         window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken, {
-            domain:
-                wwLib.globalContext.browser.environment === 'editor'
-                    ? window.location.hostname.replace('editor', '')
-                    : '.' + wwLib.wwApiRequests._getPreviewUrl(),
+            domain: window.location.hostname.replace('editor', ''),
             secure: true,
             sameSite: 'Lax',
         });
