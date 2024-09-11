@@ -238,8 +238,7 @@ export default {
             `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
                 this.settings.id
             }/auth0/users/current`,
-            data,
-            { headers: { 'x-weweb-cookies': JSON.stringify({ session: this.accessToken }) } }
+            { accessToken: this.accessToken, data }
         );
         /* wwFront:end */
         await wwLib.wwPlugins.auth0.client.getTokenSilently({ cacheMode: 'off' });
@@ -260,8 +259,7 @@ export default {
             `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
                 this.settings.id
             }/auth0/users/current`,
-            data,
-            { headers: { 'x-weweb-cookies': JSON.stringify({ session: this.accessToken }) } }
+            { accessToken: this.accessToken, data }
         );
         /* wwFront:end */
         this.logout();
