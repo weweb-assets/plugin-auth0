@@ -197,11 +197,7 @@ export default {
     },
     async setCookieSession(token = null) {
         const sessionToken = token || (await this.client.getTokenSilently());
-        window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken, {
-            domain: window.location.hostname.replace('editor', ''),
-            secure: true,
-            sameSite: 'Lax',
-        });
+        window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken);
         wwLib.wwVariable.updateValue(`${this.id}-accessToken`, sessionToken);
     },
     redirectAfterSignIn() {
@@ -242,7 +238,8 @@ export default {
             `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
                 this.settings.id
             }/auth0/users/current`,
-            data
+            data,
+            { headers: { 'x-weweb-cookies': JSON.stringify({ session: this.accessToken }) } }
         );
         /* wwFront:end */
         await wwLib.wwPlugins.auth0.client.getTokenSilently({ cacheMode: 'off' });
@@ -263,7 +260,8 @@ export default {
             `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
                 this.settings.id
             }/auth0/users/current`,
-            data
+            data,
+            { headers: { 'x-weweb-cookies': JSON.stringify({ session: this.accessToken }) } }
         );
         /* wwFront:end */
         this.logout();
