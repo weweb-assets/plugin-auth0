@@ -2,6 +2,7 @@ export default {
     features: {
         auth: true,
     },
+    /* wwEditor:start */
     editor: {
         settings: [
             {
@@ -18,6 +19,7 @@ export default {
         ],
         designSystemId: 'ec2eebfe-499b-43c4-b260-80ee5a4d9504',
     },
+    /* wwEditor:end */
     variables: [
         { name: 'user', value: 'user', type: 'object', defaultValue: null },
         { name: 'accessToken', value: 'token', type: 'accessToken', defaultValue: null },
