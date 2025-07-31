@@ -32,6 +32,22 @@ export default {
             isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/Login.vue'),
+            copilot: {
+                description: "Opens a popup window for Auth0 authentication",
+                returns: "void",
+                schema: {
+                    screenHint: {
+                        type: "string",
+                        description: "Determines whether to show login or signup screen",
+                        bindable: false
+                    },
+                    organization: {
+                        type: "string",
+                        description: "Organization ID for enterprise authentication",
+                        bindable: true
+                    }
+                }
+            }
             /* wwEditor:end */
         },
         {
@@ -39,15 +55,82 @@ export default {
             code: 'loginWithRedirect',
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/Login.vue'),
+            copilot: {
+                description: "Redirects to Auth0 authentication page",
+                returns: "void",
+                schema: {
+                    screenHint: {
+                        type: "string",
+                        description: "Determines whether to show login or signup screen",
+                        bindable: false
+                    },
+                    organization: {
+                        type: "string",
+                        description: "Organization ID for enterprise authentication",
+                        bindable: true
+                    }
+                }
+            }
             /* wwEditor:end */
         },
-        { name: 'Logout', code: 'logout' },
+        { 
+            name: 'Logout', 
+            code: 'logout',
+            /* wwEditor:start */
+            copilot: {
+                description: "Logs out the current user and clears the session",
+                returns: "void",
+                schema: {}
+            }
+            /* wwEditor:end */
+        },
         {
             name: 'Update User Profile',
             code: 'updateUserProfile',
             isAsync: true,
             /* wwEditor:start */
             edit: () => import('./src/components/Functions/UpdateUserProfile.vue'),
+            copilot: {
+                description: "Updates the current user's profile information",
+                returns: "void",
+                schema: {
+                    familyName: {
+                        type: "string",
+                        description: "User's family name/surname",
+                        bindable: true
+                    },
+                    givenName: {
+                        type: "string",
+                        description: "User's given/first name",
+                        bindable: true
+                    },
+                    nickname: {
+                        type: "string",
+                        description: "User's nickname",
+                        bindable: true
+                    },
+                    username: {
+                        type: "string",
+                        description: "User's username",
+                        bindable: true
+                    },
+                    name: {
+                        type: "string",
+                        description: "User's full name",
+                        bindable: true
+                    },
+                    picture: {
+                        type: "string",
+                        description: "URL of user's profile picture",
+                        bindable: true
+                    },
+                    metadata: {
+                        type: "array",
+                        description: "Array of key-value pairs for custom user metadata",
+                        bindable: true
+                    }
+                }
+            }
             /* wwEditor:end */
         },
         {
@@ -59,6 +142,17 @@ export default {
             getIsValid({ email }) {
                 return !!email;
             },
+            copilot: {
+                description: "Updates the current user's email address",
+                returns: "void",
+                schema: {
+                    email: {
+                        type: "string",
+                        description: "New email address for the user",
+                        bindable: true
+                    }
+                }
+            }
             /* wwEditor:end */
         },
         {
@@ -70,6 +164,22 @@ export default {
             getIsValid({ connection, email }) {
                 return !!connection && !!email;
             },
+            copilot: {
+                description: "Initiates password change process for a user",
+                returns: "void",
+                schema: {
+                    connection: {
+                        type: "string",
+                        description: "Auth0 database connection name",
+                        bindable: false
+                    },
+                    email: {
+                        type: "string",
+                        description: "Email address of the user",
+                        bindable: true
+                    }
+                }
+            }
             /* wwEditor:end */
         },
     ],
