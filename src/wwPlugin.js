@@ -89,8 +89,8 @@ export default {
         const isHomePage = page && page.id === website.homePageId;
         const redirectUriEditor =
             page && !isHomePage
-                ? `${window.location.origin}/${website.id}/${page.id}`
-                : `${window.location.origin}/${website.id}/`;
+                ? `${window.location.origin}/${page.id}`
+                : `${window.location.origin}/`;
         this.client = await createAuth0Client({
             domain: customDomain || domain,
             clientId: client_id,
@@ -182,7 +182,7 @@ export default {
             .find(page => page.id === this.settings.publicData.afterNotSignInPageId);
         this.client.logout({
             logoutParams: {
-                returnTo: `${window.location.origin}/${website.id}/${page.id === homePageId ? '' : page.id}`,
+                returnTo: `${window.location.origin}/${page.id === homePageId ? '' : page.id}`,
             },
         });
         /* wwEditor:end */
@@ -192,14 +192,21 @@ export default {
         /* wwFront:end */
     },
     removeCookieSession() {
+        /* wwEditor:start */
+        window.vm.config.globalProperties.$cookie.removeCookie('session', {
+            domain: window.location.hostname.replace(/^.*?-?editor/, ''),
+        });
+        /* wwEditor:end */
+        /* wwFront:start */
         window.vm.config.globalProperties.$cookie.removeCookie('session');
+        /* wwFront:end */
         wwLib.wwVariable.updateValue(`${this.id}-accessToken`, null);
     },
     async setCookieSession(token = null) {
         const sessionToken = token || (await this.client.getTokenSilently());
         window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken, {
             /* wwEditor:start */
-            domain: window.location.hostname.replace('editor', ''),
+            domain: window.location.hostname.replace(/^.*?-?editor/, ''),
             /* wwEditor:end */
             secure: true,
             sameSite: 'Lax',
