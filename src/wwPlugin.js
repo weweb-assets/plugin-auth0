@@ -88,9 +88,7 @@ export default {
         const page = wwLib.wwWebsiteData.getPages().find(page => page.id === afterSignInPageId);
         const isHomePage = page && page.id === website.homePageId;
         const redirectUriEditor =
-            page && !isHomePage
-                ? `${window.location.origin}/${page.id}`
-                : `${window.location.origin}/`;
+            page && !isHomePage ? `${window.location.origin}/${page.id}` : `${window.location.origin}/`;
         this.client = await createAuth0Client({
             domain: customDomain || domain,
             clientId: client_id,
@@ -320,7 +318,6 @@ export const updateClient = async (settings, clientId, clientData) => {
 
 export const getSPAClientRedirection = settings => {
     const customDomain = wwLib.wwWebsiteData.getInfo().names[0];
-    const publishedOrigin = `https://${window.location.hostname.replace('-editor', '-production')}`;
     const getUrls = pageId => {
         const page = wwLib.wwWebsiteData.getPages().find(page => page.id === pageId);
         if (!page) return [];
@@ -328,7 +325,7 @@ export const getSPAClientRedirection = settings => {
         const editorUrl = `${window.location.origin}/${isHomePageId ? '' : page.id}`;
         const frontUrls = page.langs
             .map(lang => [
-                `${publishedOrigin}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
+                `${window.location.origin}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
                 customDomain && `https://${customDomain.name}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
             ])
             .flat()
@@ -336,7 +333,7 @@ export const getSPAClientRedirection = settings => {
         return [...frontUrls, editorUrl];
     };
     const origins = [
-        publishedOrigin,
+        window.location.origin,
         customDomain && customDomain.name && `https://${customDomain.name}`,
         `${window.location.origin}`,
     ].filter(item => item);
