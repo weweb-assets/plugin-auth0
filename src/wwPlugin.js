@@ -320,6 +320,7 @@ export const updateClient = async (settings, clientId, clientData) => {
 
 export const getSPAClientRedirection = settings => {
     const customDomain = wwLib.wwWebsiteData.getInfo().names[0];
+    const publishedOrigin = `https://${window.location.hostname.replace('-editor', '-production')}`;
     const getUrls = pageId => {
         const page = wwLib.wwWebsiteData.getPages().find(page => page.id === pageId);
         if (!page) return [];
@@ -327,10 +328,7 @@ export const getSPAClientRedirection = settings => {
         const editorUrl = `${window.location.origin}/${isHomePageId ? '' : page.id}`;
         const frontUrls = page.langs
             .map(lang => [
-                `https://${settings.designId}-production.${wwLib.wwApiRequests._getPreviewUrl()}${wwLib.wwPageHelper.getPagePath(
-                    page.id,
-                    lang
-                )}`,
+                `${publishedOrigin}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
                 customDomain && `https://${customDomain.name}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
             ])
             .flat()
@@ -338,7 +336,7 @@ export const getSPAClientRedirection = settings => {
         return [...frontUrls, editorUrl];
     };
     const origins = [
-        `https://${settings.designId}-production.${wwLib.wwApiRequests._getPreviewUrl()}`,
+        publishedOrigin,
         customDomain && customDomain.name && `https://${customDomain.name}`,
         `${window.location.origin}`,
     ].filter(item => item);
