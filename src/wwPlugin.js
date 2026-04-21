@@ -88,9 +88,7 @@ export default {
         const page = wwLib.wwWebsiteData.getPages().find(page => page.id === afterSignInPageId);
         const isHomePage = page && page.id === website.homePageId;
         const redirectUriEditor =
-            page && !isHomePage
-                ? `${window.location.origin}/${page.id}`
-                : `${window.location.origin}/`;
+            page && !isHomePage ? `${window.location.origin}/${page.id}` : `${window.location.origin}/`;
         this.client = await createAuth0Client({
             domain: customDomain || domain,
             clientId: client_id,
@@ -246,13 +244,10 @@ export default {
         await updateCurrentUser(this.settings, data);
         /* wwEditor:end */
         /* wwFront:start */
-        const websiteId = wwLib.wwWebsiteData.getInfo().id;
-        await axios.patch(
-            `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
-                this.settings.id
-            }/auth0/users/current`,
-            { accessToken: this.accessToken, data }
-        );
+        await axios.patch(`${window.location.origin}/ww/settings/${this.settings.id}/auth0/users/current`, {
+            accessToken: this.accessToken,
+            data,
+        });
         /* wwFront:end */
         await wwLib.wwPlugins.auth0.client.getTokenSilently({ cacheMode: 'off' });
         const user = await this.client.getUser();
@@ -267,13 +262,10 @@ export default {
         await updateCurrentUser(this.settings, data);
         /* wwEditor:end */
         /* wwFront:start */
-        const websiteId = wwLib.wwWebsiteData.getInfo().id;
-        await axios.patch(
-            `//${websiteId}.${wwLib.wwApiRequests._getPreviewUrl()}/ww/settings/${
-                this.settings.id
-            }/auth0/users/current`,
-            { accessToken: this.accessToken, data }
-        );
+        await axios.patch(`${window.location.origin}/ww/settings/${this.settings.id}/auth0/users/current`, {
+            accessToken: this.accessToken,
+            data,
+        });
         /* wwFront:end */
         this.logout();
     },
@@ -330,13 +322,10 @@ export const getSPAClientRedirection = settings => {
         const page = wwLib.wwWebsiteData.getPages().find(page => page.id === pageId);
         if (!page) return [];
         const isHomePageId = page.id === wwLib.wwWebsiteData.getInfo().homePageId;
-        const editorUrl = `${window.location.origin}/${settings.designId}/${isHomePageId ? '' : page.id}`;
+        const editorUrl = `${window.location.origin}/${isHomePageId ? '' : page.id}`;
         const frontUrls = page.langs
             .map(lang => [
-                `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}${wwLib.wwPageHelper.getPagePath(
-                    page.id,
-                    lang
-                )}`,
+                `${window.location.origin}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
                 customDomain && `https://${customDomain.name}${wwLib.wwPageHelper.getPagePath(page.id, lang)}`,
             ])
             .flat()
@@ -344,7 +333,7 @@ export const getSPAClientRedirection = settings => {
         return [...frontUrls, editorUrl];
     };
     const origins = [
-        `https://${settings.designId}.${wwLib.wwApiRequests._getPreviewUrl()}`,
+        window.location.origin,
         customDomain && customDomain.name && `https://${customDomain.name}`,
         `${window.location.origin}`,
     ].filter(item => item);
