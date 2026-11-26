@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "designSystemId": "ec2eebfe-499b-43c4-b260-80ee5a4d9504",
+  "features": {
+    "auth": true
+  },
+  "settings": {
+    "fields": [
+      {
+        "key": "connection",
+        "label": "Auth0 applications",
+        "type": "connection",
+        "operation": "auth0.connection",
+        "required": true
+      },
+      {
+        "key": "customDomain",
+        "label": "Custom domain",
+        "type": "text",
+        "storage": "publicData"
+      },
+      {
+        "key": "audience",
+        "label": "Audience",
+        "type": "text",
+        "storage": "publicData"
+      },
+      {
+        "key": "scope",
+        "label": "Scope",
+        "type": "text",
+        "storage": "publicData"
+      }
+    ],
+    "summary": [
+      {
+        "field": "connection",
+        "label": "Domain"
+      }
+    ]
+  },
+  "variables": [
+    {
+      "name": "user",
+      "type": "object"
+    },
+    {
+      "name": "accessToken",
+      "type": "accessToken"
+    },
+    {
+      "name": "isAuthenticated",
+      "type": "boolean"
+    }
+  ],
+  "actions": [
+    {
+      "code": "loginWithPopup",
+      "name": "Login with Popup",
+      "isAsync": true,
+      "form": {
+        "fields": [
+          {
+            "includeFields": "login"
+          }
+        ]
+      }
+    },
+    {
+      "code": "loginWithRedirect",
+      "name": "Login with Redirect",
+      "form": {
+        "fields": [
+          {
+            "includeFields": "login"
+          }
+        ]
+      }
+    },
+    {
+      "code": "logout",
+      "name": "Logout"
+    },
+    {
+      "code": "updateUserProfile",
+      "name": "Update User Profile",
+      "isAsync": true,
+      "form": {
+        "fields": [
+          {
+            "key": "familyName",
+            "label": "Family name",
+            "type": "text",
+            "bindable": true
+          },
+          {
+            "key": "givenName",
+            "label": "Given name",
+            "type": "text",
+            "bindable": true
+          },
+          {
+            "key": "nickname",
+            "label": "Nickname",
+            "type": "text",
+            "bindable": true
+          },
+          {
+            "key": "username",
+            "label": "Username",
+            "type": "text",
+            "bindable": true
+          },
+          {
+            "key": "name",
+            "label": "Name",
+            "type": "text",
+            "bindable": true
+          },
+          {
+            "key": "picture",
+            "label": "Picture",
+            "type": "text",
+            "bindable": true
+          },
+          {
+            "key": "metadata",
+            "label": "Metadata",
+            "type": "list",
+            "bindable": true,
+            "item": {
+              "type": "record",
+              "fields": [
+                {
+                  "key": "key",
+                  "label": "Key",
+                  "type": "text"
+                },
+                {
+                  "key": "value",
+                  "label": "Value",
+                  "type": "text",
+                  "bindable": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "code": "updateUserEmail",
+      "name": "Update User Email",
+      "isAsync": true,
+      "validation": "requiredFields",
+      "form": {
+        "fields": [
+          {
+            "key": "email",
+            "label": "Email",
+            "type": "text",
+            "bindable": true,
+            "required": true,
+            "placeholder": "Enter an email"
+          }
+        ]
+      }
+    },
+    {
+      "code": "changeUserPassword",
+      "name": "Change User Password",
+      "isAsync": true,
+      "validation": "requiredFields",
+      "form": {
+        "fields": [
+          {
+            "key": "connection",
+            "label": "Database",
+            "type": "choice",
+            "operation": "auth0.databases",
+            "required": true
+          },
+          {
+            "key": "email",
+            "label": "Email",
+            "type": "text",
+            "bindable": true,
+            "required": true,
+            "placeholder": "Enter an email"
+          }
+        ]
+      }
+    }
+  ],
+  "fieldSets": {
+    "login": [
+      {
+        "key": "screenHint",
+        "label": "Screen hint",
+        "type": "choice",
+        "initial": "login",
+        "choices": [
+          {
+            "label": "Sign In",
+            "value": "login"
+          },
+          {
+            "label": "Sign Up",
+            "value": "signup"
+          }
+        ]
+      },
+      {
+        "key": "organization",
+        "label": "Organization",
+        "type": "text",
+        "bindable": true,
+        "placeholder": "Enter an ID"
+      }
+    ]
+  }
+}
