@@ -22,6 +22,32 @@ import {
 
 const ACCESS_COOKIE_NAME = 'session';
 
+function projectUser(user) {
+    return user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null;
+}
+
+/* wwEditor:start */
+// The SDK cache belongs to this connection in this preview tab, including across provider redirects.
+function previewCache(connection) {
+    const prefix = `ww-auth0:${JSON.stringify(connection)}:`;
+    return {
+        get(key) {
+            const entry = sessionStorage.getItem(prefix + key);
+            return entry ? JSON.parse(entry) : undefined;
+        },
+        set(key, value) {
+            sessionStorage.setItem(prefix + key, JSON.stringify(value));
+        },
+        remove(key) {
+            sessionStorage.removeItem(prefix + key);
+        },
+        allKeys() {
+            return Object.keys(sessionStorage).filter(key => key.startsWith(prefix)).map(key => key.slice(prefix.length));
+        },
+    };
+}
+/* wwEditor:end */
+
 export default {
     /*=============================================m_ÔÔ_m=============================================\
         Plugin API
@@ -29,6 +55,12 @@ export default {
     async _onLoad() {
         await this.createClient();
     },
+    /* wwEditor:start */
+    async onPreviewSettingsChanged() {
+        await this.createClient();
+        await this._initAuth();
+    },
+    /* wwEditor:end */
     async _initAuth() {
         if (!this.client) return;
         await this.checkRedirectCallback();
@@ -81,6 +113,31 @@ export default {
             audience,
             scope,
         } = this.settings.publicData;
+        /* wwEditor:start */
+        if (wwLib.editor?.isolatedCanvas) {
+            const revision = Symbol();
+            this.previewClientRevision = revision;
+            this.client = null;
+            wwLib.wwVariable.updateValue(`${this.id}-user`, null);
+            wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, false);
+            wwLib.wwVariable.updateValue(`${this.id}-accessToken`, null);
+            if ((!domain && !customDomain) || !client_id) return;
+            const project = wwLib.wwWebsiteData.getInfo();
+            const returnPage = afterSignInPageId || project.homePageId;
+            const client = await createAuth0Client({
+                domain: customDomain || domain,
+                clientId: client_id,
+                cache: previewCache([project.id, this.id, customDomain || domain, client_id, audience || '', scope || '']),
+                authorizationParams: {
+                    audience,
+                    scope: scope || 'openid profile email',
+                    redirect_uri: wwLib.editor.previewAuthReturn?.('signin', returnPage) || window.location.href.split(/[?#]/)[0],
+                },
+            });
+            if (revision === this.previewClientRevision) this.client = client;
+            return;
+        }
+        /* wwEditor:end */
         if ((!domain && !customDomain) || !client_id) return;
 
         /* wwEditor:start */
@@ -118,6 +175,16 @@ export default {
     },
     async checkRedirectCallback() {
         try {
+            /* wwEditor:start */
+            if (wwLib.editor?.isolatedCanvas) {
+                const callback = wwLib.editor.takePreviewAuthResponse?.();
+                if (callback) {
+                    await this.client.handleRedirectCallback(callback);
+                    await this.setCookieSession();
+                }
+                return;
+            }
+            /* wwEditor:end */
             const _window = wwLib.manager ? wwLib.getEditorWindow() : wwLib.getFrontWindow();
             const params = new URLSearchParams(_window.location.search);
             if (params.has('code') && params.has('state')) {
@@ -130,14 +197,27 @@ export default {
         }
     },
     async checkIsAuthenticated() {
-        const isAuthenticated = await this.client.isAuthenticated();
+        const client = this.client;
+        if (!client) return;
+        const isAuthenticated = await client.isAuthenticated();
+        /* wwEditor:start */
+        if (wwLib.editor?.isolatedCanvas) {
+            const accessToken = isAuthenticated ? await client.getTokenSilently() : null;
+            const user = isAuthenticated ? await client.getUser() : null;
+            if (this.client !== client) return;
+            wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, isAuthenticated);
+            wwLib.wwVariable.updateValue(`${this.id}-accessToken`, accessToken);
+            wwLib.wwVariable.updateValue(`${this.id}-user`, projectUser(user));
+            return;
+        }
+        /* wwEditor:end */
         wwLib.wwVariable.updateValue(`${this.id}-isAuthenticated`, isAuthenticated);
         const accessToken = window.vm.config.globalProperties.$cookie.getCookie(ACCESS_COOKIE_NAME);
         wwLib.wwVariable.updateValue(`${this.id}-accessToken`, accessToken);
         const user = await this.client.getUser();
         wwLib.wwVariable.updateValue(
             `${this.id}-user`,
-            user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
+            projectUser(user)
         );
     },
     async loginWithPopup({ screenHint, organization }) {
@@ -166,6 +246,10 @@ export default {
         });
         /* wwFront:end */
         /* wwEditor:start */
+        if (wwLib.editor?.isolatedCanvas) {
+            if (!wwLib.editor.previewAuthReturn) throw new Error('Open the preview in a new tab to sign in with Auth0.');
+            return this.client.loginWithRedirect({ authorizationParams: { screen_hint: screenHint, organization } });
+        }
         // eslint-disable-next-line no-unreachable
         return this.loginWithPopup({ screenHint, organization });
         /* wwEditor:end */
@@ -174,6 +258,11 @@ export default {
         this.removeCookieSession();
         /* wwEditor:start */
         const website = wwLib.wwWebsiteData.getInfo();
+        if (wwLib.editor?.isolatedCanvas) {
+            if (!wwLib.editor.previewAuthReturn) throw new Error('Open the preview in a new tab to sign out of Auth0.');
+            const page = this.settings.publicData.afterNotSignInPageId || website.homePageId;
+            return this.client.logout({ logoutParams: { returnTo: wwLib.editor.previewAuthReturn('signout', page) } });
+        }
         const homePageId = website.homePageId;
         const page = wwLib.wwWebsiteData
             .getPages()
@@ -191,6 +280,10 @@ export default {
     },
     removeCookieSession() {
         /* wwEditor:start */
+        if (wwLib.editor?.isolatedCanvas) {
+            wwLib.wwVariable.updateValue(`${this.id}-accessToken`, null);
+            return;
+        }
         window.vm.config.globalProperties.$cookie.removeCookie('session', {
             domain: window.location.hostname.replace(/^.*?-?editor/, ''),
         });
@@ -202,6 +295,12 @@ export default {
     },
     async setCookieSession(token = null) {
         const sessionToken = token || (await this.client.getTokenSilently());
+        /* wwEditor:start */
+        if (wwLib.editor?.isolatedCanvas) {
+            wwLib.wwVariable.updateValue(`${this.id}-accessToken`, sessionToken);
+            return;
+        }
+        /* wwEditor:end */
         window.vm.config.globalProperties.$cookie.setCookie('session', sessionToken, {
             /* wwEditor:start */
             domain: window.location.hostname.replace(/^.*?-?editor/, ''),
@@ -253,7 +352,7 @@ export default {
         const user = await this.client.getUser();
         wwLib.wwVariable.updateValue(
             `${this.id}-user`,
-            user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null
+            projectUser(user)
         );
     },
     async updateUserEmail({ email }) {
