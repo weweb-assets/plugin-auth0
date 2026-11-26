@@ -67,10 +67,11 @@ export default {
         await this.checkIsAuthenticated();
     },
     _getUserRoles() {
-        return this.user?.roles || [];
+        return Array.isArray(this.user?.roles) ? this.user.roles : [];
     },
     _matchRoles(roles) {
-        return roles.every(role => this.user?.roles.includes(role));
+        const assigned = this._getUserRoles();
+        return roles.every(role => assigned.includes(role));
     },
 
     /*=============================================m_ÔÔ_m=============================================\
