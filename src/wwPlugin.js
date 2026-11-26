@@ -178,10 +178,11 @@ export default {
             /* wwEditor:start */
             if (wwLib.editor?.isolatedCanvas) {
                 const callback = wwLib.editor.takePreviewAuthResponse?.();
-                if (callback) {
-                    await this.client.handleRedirectCallback(callback);
-                    await this.setCookieSession();
-                }
+                if (!callback) return;
+                const params = new URL(callback).searchParams;
+                if (!params.has('state') || (!params.has('code') && !params.has('error'))) return;
+                await this.client.handleRedirectCallback(callback);
+                await this.setCookieSession();
                 return;
             }
             /* wwEditor:end */
