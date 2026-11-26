@@ -330,7 +330,7 @@ export default {
 
         return response.data;
     },
-    async updateUserProfile({ familyName, givenName, nickname, username, name, picture, metadata }) {
+    async updateUserProfile({ familyName, givenName, nickname, username, name, picture, metadata }, wwUtils) {
         const data = {
             familyName,
             givenName,
@@ -341,7 +341,8 @@ export default {
             metadata: (metadata || []).reduce((obj, item) => ({ ...obj, [item.key]: item.value }), {}),
         };
         /* wwEditor:start */
-        await updateCurrentUser(this.settings, data);
+        if (wwLib.editor?.isolatedCanvas) await updatePreviewUser(this.client, wwUtils);
+        else await updateCurrentUser(this.settings, data);
         /* wwEditor:end */
         /* wwFront:start */
         await axios.patch(`${window.location.origin}/ww/settings/${this.settings.id}/auth0/users/current`, {
@@ -356,10 +357,11 @@ export default {
             projectUser(user)
         );
     },
-    async updateUserEmail({ email }) {
+    async updateUserEmail({ email }, wwUtils) {
         const data = { email };
         /* wwEditor:start */
-        await updateCurrentUser(this.settings, data);
+        if (wwLib.editor?.isolatedCanvas) await updatePreviewUser(this.client, wwUtils);
+        else await updateCurrentUser(this.settings, data);
         /* wwEditor:end */
         /* wwFront:start */
         await axios.patch(`${window.location.origin}/ww/settings/${this.settings.id}/auth0/users/current`, {
@@ -534,6 +536,14 @@ export const getConnections = async settings => {
 /*=============================================m_ÔÔ_m=============================================\
     Users
 \================================================================================================*/
+async function updatePreviewUser(client, wwUtils) {
+    if (!client || !wwUtils?.runPreviewAction) throw Error('Sign in to the preview to update the current user.');
+    const accessToken = await client.getTokenSilently();
+    const claims = await client.getIdTokenClaims();
+    if (!accessToken || !claims?.__raw) throw Error('Sign in to the preview to update the current user.');
+    await wwUtils.runPreviewAction({ accessToken, idToken: claims.__raw });
+}
+
 const updateCurrentUser = async (settings, userData) => {
     const { data } = await wwLib.$apollo.mutate({
         mutation: UPDATE_CURRENT_USER,
