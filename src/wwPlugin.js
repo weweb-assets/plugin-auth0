@@ -51,7 +51,9 @@ function previewCache(connection) {
             sessionStorage.removeItem(prefix + key);
         },
         allKeys() {
-            return Object.keys(sessionStorage).filter(key => key.startsWith(prefix)).map(key => key.slice(prefix.length));
+            return Object.keys(sessionStorage)
+                .filter(key => key.startsWith(prefix))
+                .map(key => key.slice(prefix.length));
         },
     };
 }
@@ -137,11 +139,19 @@ export default {
             const client = await createAuth0Client({
                 domain: customDomain || domain,
                 clientId: client_id,
-                cache: previewCache([project.id, this.id, customDomain || domain, client_id, audience || '', scope || '']),
+                cache: previewCache([
+                    project.id,
+                    this.id,
+                    customDomain || domain,
+                    client_id,
+                    audience || '',
+                    scope || '',
+                ]),
                 authorizationParams: {
                     audience,
                     scope: scope || 'openid profile email',
-                    redirect_uri: wwLib.editor.previewAuthReturn?.('signin', returnPage) || window.location.href.split(/[?#]/)[0],
+                    redirect_uri:
+                        wwLib.editor.previewAuthReturn?.('signin', returnPage) || window.location.href.split(/[?#]/)[0],
                 },
             });
             if (revision === this.previewClientRevision) this.client = client;
@@ -226,10 +236,7 @@ export default {
         const accessToken = window.vm.config.globalProperties.$cookie.getCookie(ACCESS_COOKIE_NAME);
         wwLib.wwVariable.updateValue(`${this.id}-accessToken`, accessToken);
         const user = await this.client.getUser();
-        wwLib.wwVariable.updateValue(
-            `${this.id}-user`,
-            projectUser(user)
-        );
+        wwLib.wwVariable.updateValue(`${this.id}-user`, projectUser(user));
     },
     async loginWithPopup({ screenHint, organization }) {
         try {
@@ -248,22 +255,11 @@ export default {
         }
     },
     loginWithRedirect({ screenHint, organization }) {
-        /* wwFront:start */
-        return this.client.loginWithRedirect({
-            authorizationParams: {
-                screen_hint: screenHint,
-                organization,
-            },
-        });
-        /* wwFront:end */
         /* wwEditor:start */
-        if (wwLib.editor?.isolatedCanvas) {
-            if (!wwLib.editor.previewAuthReturn) throw new Error('Open the preview in a new tab to sign in with Auth0.');
-            return this.client.loginWithRedirect({ authorizationParams: { screen_hint: screenHint, organization } });
-        }
-        // eslint-disable-next-line no-unreachable
-        return this.loginWithPopup({ screenHint, organization });
+        if (!wwLib.editor?.isolatedCanvas) return this.loginWithPopup({ screenHint, organization });
+        if (!wwLib.editor.previewAuthReturn) throw new Error('Open the preview in a new tab to sign in with Auth0.');
         /* wwEditor:end */
+        return this.client.loginWithRedirect({ authorizationParams: { screen_hint: screenHint, organization } });
     },
     logout() {
         this.removeCookieSession();
@@ -362,10 +358,7 @@ export default {
         /* wwFront:end */
         await wwLib.wwPlugins.auth0.client.getTokenSilently({ cacheMode: 'off' });
         const user = await this.client.getUser();
-        wwLib.wwVariable.updateValue(
-            `${this.id}-user`,
-            projectUser(user)
-        );
+        wwLib.wwVariable.updateValue(`${this.id}-user`, projectUser(user));
     },
     async updateUserEmail({ email }, wwUtils) {
         const data = { email };
