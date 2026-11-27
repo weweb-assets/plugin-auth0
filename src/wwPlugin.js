@@ -22,8 +22,17 @@ import {
 
 const ACCESS_COOKIE_NAME = 'session';
 
+const claimNamespace = 'https://auth0.weweb.io/';
+
 function projectUser(user) {
-    return user ? JSON.parse(JSON.stringify(user).replace(/https:\/\/auth0.weweb.io\//g, '')) : null;
+    if (!user) return null;
+    const claims = JSON.parse(JSON.stringify(user));
+    return Object.fromEntries(
+        Object.entries(claims).map(([name, value]) => [
+            name.startsWith(claimNamespace) ? name.slice(claimNamespace.length) : name,
+            value,
+        ])
+    );
 }
 
 /* wwEditor:start */
