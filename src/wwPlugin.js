@@ -78,7 +78,9 @@ export default {
         await this.checkIsAuthenticated();
     },
     _getUserRoles() {
-        return Array.isArray(this.user?.roles) ? this.user.roles : [];
+        const roles = this.user?.roles;
+        if (Array.isArray(roles)) return roles;
+        return typeof roles === 'string' && roles.length ? [roles] : [];
     },
     _matchRoles(roles) {
         const assigned = this._getUserRoles();
